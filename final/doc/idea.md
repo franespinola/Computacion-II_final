@@ -38,3 +38,10 @@ Se aplicará el patrón de diseño Observer, donde el servidor actuará como el 
 - Realiza análisis de recursos de red de forma paralela.
 - Envía resultados a los clientes.
 
+### Librerias
+- Usamos concurrent.futures.ThreadPoolExecutor para manejar conexiones concurrentes en el servidor.
+- Utilizamos concurrent.futures.ProcessPoolExecutor para analizar los datos de monitoreo de manera paralela. Cada dato se envía a una "pool" de procesos para ser analizado en paralelo.
+
+Ten en cuenta que la función analizar_datos es solo un ejemplo y deberías personalizarla según los datos específicos que estás monitoreando.
+
+Con estas modificaciones, el servidor debería ser capaz de manejar múltiples conexiones concurrentes y analizar los datos de monitoreo de manera paralela. Puedes probarlo ejecutando varios clientes simultáneamente y observando cómo el servidor los maneja de manera concurrente.
