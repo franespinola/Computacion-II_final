@@ -1,3 +1,4 @@
+# Enfoque
 Quiero armar una app cliente-servidor que permita el monitoreo de recursos de red de multiples sistemas de manera concurrente. El servidor recopilara informacion de los clientes, realizara analisis y proporcionara resultados a traves de una interfaz web.
 Los clientes enviarán datos de monitoreo al servidor de manera concurrente, y el servidor analizará los datos de forma paralela. La comunicacion entre cliente y servidor se realizara a traves de sockets
 Esto incluira la supervision de la carga de la red, uso del procesador, memoria y otros recursos criticos.
