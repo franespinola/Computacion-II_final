@@ -1,5 +1,9 @@
 import socket
 import psutil
+from celery import Celery
+
+# Configuración de Celery
+app = Celery('cliente', broker='pyamqp://guest@localhost//')
 
 class Cliente:
     def __init__(self, servidor_ip, servidor_puerto):

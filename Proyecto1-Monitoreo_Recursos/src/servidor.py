@@ -34,10 +34,6 @@ class Servidor:
             respuesta = "\n".join(resultados)
             conn.sendall(respuesta.encode())
 
-    def notificar_observadores(self, datos):
-        # Implementa la notificación de observadores
-        pass
-
     def analizar_datos(self, datos):
         # Lógica de análisis de un dato de monitoreo
         # (Esta función debe ser personalizada según los datos que estás monitoreando)
