@@ -28,7 +28,7 @@ class ServidorDamas:
             cliente.send("La partida está llena. Espere a que termine.".encode())
             cliente.close()
 
-        cliente.send(f"Bienvenido. Eres el jugador {self.jugadores[cliente]}".encode())
+        cliente.send(f"Bienvenido!.Eres el jugador {self.jugadores[cliente]}".encode())
 
     def manejar_cliente(self, cliente):
         while True:

@@ -11,7 +11,7 @@ class ClienteDamas:
         self.root.title("Juego de Damas - Cliente")
 
         self.color = self.cliente.recv(1024).decode()
-        print(f"Eres el jugador {self.color}")
+        print(f"{self.color}")
 
         # Configurar la interfaz gráfica
         self.crear_tablero()
