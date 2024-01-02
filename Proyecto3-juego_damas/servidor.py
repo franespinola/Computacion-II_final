@@ -1,5 +1,7 @@
 import socket
 import threading
+import tkinter as tk
+from tkinter import simpledialog
 
 class ServidorDamas:
     def __init__(self):
@@ -13,22 +15,24 @@ class ServidorDamas:
     def manejar_conexiones(self):
         while True:
             cliente, direccion = self.server.accept()
-            print(f"Conexión aceptada desde {direccion}")
-            self.asignar_color(cliente)
+            if len(self.jugadores) < 2:
+                print(f"Conexión aceptada desde {direccion}")
+                self.asignar_nombre(cliente)
 
-            # Inicia un hilo para manejar la conexión con el cliente
-            threading.Thread(target=self.manejar_cliente, args=(cliente,), daemon=True).start()
+                # Inicia un hilo para manejar la conexión con el cliente
+                threading.Thread(target=self.manejar_cliente, args=(cliente,), daemon=True).start()
+            else:
+                cliente.send("La partida está llena. Espere a que termine.".encode())
+                cliente.close()
 
-    def asignar_color(self, cliente):
-        if len(self.jugadores) == 0:
-            self.jugadores[cliente] = "A"
-        elif len(self.jugadores) == 1:
-            self.jugadores[cliente] = "B"
-        else:
-            cliente.send("La partida está llena. Espere a que termine.".encode())
-            cliente.close()
+    def asignar_nombre(self, cliente):
+        # Solicitar nombre a través de una ventana gráfica
+        root = tk.Tk()
+        root.withdraw()  # Oculta la ventana principal
 
-        cliente.send(f"Bienvenido!.Eres el jugador {self.jugadores[cliente]}".encode())
+        nombre = simpledialog.askstring("Nombre", "Ingresa tu nombre:")
+        self.jugadores[cliente] = nombre
+        cliente.send(f"Bienvenido, {nombre}! Eres el jugador {len(self.jugadores)}".encode())
 
     def manejar_cliente(self, cliente):
         while True:
@@ -48,16 +52,19 @@ class ServidorDamas:
                 print(e)
                 break
 
-        print(f"Cliente {self.jugadores[cliente]} desconectado.")
-        del self.jugadores[cliente]
+        if cliente in self.jugadores:
+            print(f"Cliente {self.jugadores[cliente]} desconectado.")
+            del self.jugadores[cliente]
         cliente.close()
 
     def enviar_actualizacion(self):
         # Enviar el estado actual del tablero a ambos jugadores
         # ...
         pass
+
 if __name__ == "__main__":
     servidor = ServidorDamas()
     servidor.manejar_conexiones()
+
 
 

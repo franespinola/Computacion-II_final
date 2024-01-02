@@ -10,8 +10,8 @@ class ClienteDamas:
         self.root = tk.Tk()
         self.root.title("Juego de Damas - Cliente")
 
-        self.color = self.cliente.recv(1024).decode()
-        print(f"{self.color}")
+        self.jugador = self.cliente.recv(1024).decode()
+        print(f"{self.jugador}")
 
         # Configurar la interfaz gráfica
         self.crear_tablero()
