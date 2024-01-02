@@ -22,12 +22,39 @@ class ClienteDamas:
         self.root.mainloop()
 
     def crear_tablero(self):
-        # Configurar la interfaz gráfica del tablero
-        # ...
+        self.lienzo = tk.Canvas(self.root, width=400, height=400, bg="white")
+        self.lienzo.pack()
 
-        # Configurar eventos de clic en las casillas del tablero
-        # ...
-        pass
+        self.casillas = [[None] * 8 for _ in range(8)]
+
+        for fila in range(8):
+            for columna in range(8):
+                color = "white" if (fila + columna) % 2 == 0 else "black"
+                x1, y1 = columna * 50, fila * 50
+                x2, y2 = x1 + 50, y1 + 50
+                casilla = self.lienzo.create_rectangle(x1, y1, x2, y2, fill=color, tags="casilla")
+                self.casillas[fila][columna] = casilla
+
+        self.iniciar_piezas()
+
+    def iniciar_piezas(self):
+        for fila in range(3):
+            for columna in range(8):
+                if (fila + columna) % 2 != 0:
+                    self.crear_pieza(fila, columna, "A")
+
+        for fila in range(5, 8):
+            for columna in range(8):
+                if (fila + columna) % 2 != 0:
+                    self.crear_pieza(fila, columna, "blanco")
+
+    def crear_pieza(self, fila, columna, jugador):
+        x1, y1 = columna * 50, fila * 50
+        x2, y2 = x1 + 50, y1 + 50
+        color_ficha = "red" if jugador == "A" else "blue"
+        pieza = self.lienzo.create_oval(x1+5, y1+5, x2-5, y2-5, fill=color_ficha, tags="pieza")
+        self.casillas[fila][columna] = {"jugador": jugador, "pieza": pieza}
+
     def enviar_movimiento(self, origen, destino):
         movimiento = f"{origen[0]},{origen[1]},{destino[0]},{destino[1]}"
         self.cliente.send(movimiento.encode())

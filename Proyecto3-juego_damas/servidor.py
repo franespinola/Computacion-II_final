@@ -21,9 +21,9 @@ class ServidorDamas:
 
     def asignar_color(self, cliente):
         if len(self.jugadores) == 0:
-            self.jugadores[cliente] = "blanco"
+            self.jugadores[cliente] = "A"
         elif len(self.jugadores) == 1:
-            self.jugadores[cliente] = "negro"
+            self.jugadores[cliente] = "B"
         else:
             cliente.send("La partida está llena. Espere a que termine.".encode())
             cliente.close()
