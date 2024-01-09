@@ -1,4 +1,3 @@
-
 class TableroDamas:
     def __init__(self):
         self.estado = None
@@ -47,9 +46,17 @@ class TableroDamas:
                         fila_intermedia = (fila_destino + fila_origen) // 2
                         columna_intermedia = (columna_destino + columna_origen) // 2
                         # Verifica si hay una pieza enemiga en la casilla intermedia
-                        if self.obtener_pieza(fila_intermedia, columna_intermedia) != jugador and self.obtener_pieza(fila_intermedia, columna_intermedia) != 0:
+                        if (
+                            self.obtener_pieza(fila_intermedia, columna_intermedia) != jugador
+                            and self.obtener_pieza(fila_intermedia, columna_intermedia) != 0
+                            and (
+                                (jugador == 1 and fila_intermedia < fila_destino)
+                                or (jugador == 2 and fila_intermedia > fila_destino)
+                            )
+                        ):
                             return True
         return False
+
 
 
     def realizar_movimiento(self, jugador, fila_origen, columna_origen, fila_destino, columna_destino):
@@ -78,8 +85,13 @@ class TableroDamas:
 
         # Verifica si hay una ficha enemiga en la posición intermedia
         if self.obtener_pieza(fila_intermedia, columna_intermedia) != jugador and self.obtener_pieza(fila_intermedia, columna_intermedia) != 0:
-            # Elimina la ficha enemiga
-            self.estado[fila_intermedia][columna_intermedia] = 0
+            # Verifica la dirección del movimiento
+            if jugador == 1 and fila_intermedia < fila_destino:
+                # Elimina la ficha enemiga
+                self.estado[fila_intermedia][columna_intermedia] = 0
+            elif jugador == 2 and fila_intermedia > fila_destino:
+                # Elimina la ficha enemiga
+                self.estado[fila_intermedia][columna_intermedia] = 0
             
     def coronar_pieza(self, fila, columna):
         # Corona la pieza en la posición especificada
@@ -99,5 +111,4 @@ class TableroDamas:
                         columna_intermedia = (columna + nueva_columna) // 2
                         if self.obtener_pieza(fila_intermedia, columna_intermedia) != jugador and self.obtener_pieza(fila_intermedia, columna_intermedia) != 0:
                             return True
-
         return False
