@@ -24,6 +24,14 @@ class TableroDamasVisual:
         self.tablero_damas = TableroDamas()
         self.font = pygame.font.SysFont(None, 30)
         self.ficha_seleccionada = None
+        self.turno_actual = 1  # Inicia el juego con el Jugador 1
+    
+    def cambiar_turno(self):
+        # Cambia el turno entre Jugador 1 y Jugador 2
+        print(f"Antes del cambio: Turno actual: {self.turno_actual}")
+        self.turno_actual = 1 if self.turno_actual == 2 else 2
+        print(f"Después del cambio: Turno actual: {self.turno_actual}")
+
 
     def dibujar_movimientos_validos(self, fila, columna):
         # Dibuja un círculo alrededor de la ficha seleccionada y los movimientos válidos
@@ -44,13 +52,16 @@ class TableroDamasVisual:
 
             if self.ficha_seleccionada is None:
                 pieza = self.tablero_damas.obtener_pieza(fila, columna)
-                if pieza == 1:  # Si la ficha seleccionada pertenece al Jugador 1
+                if pieza == self.turno_actual:
                     self.ficha_seleccionada = (fila, columna)
             else:
                 fila_origen, columna_origen = self.ficha_seleccionada
-                if self.tablero_damas.validar_movimiento(1, fila_origen, columna_origen, fila, columna):
-                    self.tablero_damas.realizar_movimiento(1, fila_origen, columna_origen, fila, columna)
-                self.ficha_seleccionada = None
+                if self.tablero_damas.validar_movimiento(self.turno_actual, fila_origen, columna_origen, fila, columna):
+                    self.tablero_damas.realizar_movimiento(self.turno_actual, fila_origen, columna_origen, fila, columna)
+                    self.ficha_seleccionada = None
+                    self.cambiar_turno()  # Cambia al siguiente jugador
+
+
 
     def dibujar_casillas(self):
         for fila in range(FILA):
@@ -91,7 +102,7 @@ class TableroDamasVisual:
                 fila, columna = self.ficha_seleccionada
                 self.dibujar_movimientos_validos(fila, columna)
 
-            self.mostrar_texto("Turno del Jugador: 1", (10, DIMENSION_VENTANA[1] - 40))
+            self.mostrar_texto(f"Turno del Jugador: {self.turno_actual}", (10, DIMENSION_VENTANA[1] - 40))
 
             pygame.display.flip()
             self.reloj.tick(60)
