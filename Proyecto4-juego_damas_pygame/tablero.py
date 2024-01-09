@@ -38,6 +38,9 @@ class TableroDamas:
                         # Fichas rojas solo pueden avanzar hacia arriba (filas decrecientes)
                         if jugador == 1 and fila_destino < fila_origen:
                             return False
+                        # Fichas azules solo pueden avanzar hacia arriba (filas decrecientes)
+                        elif jugador == 2 and fila_destino > fila_origen:
+                            return False
                         return True
                     # Movimiento diagonal para captura (salto)
                     elif abs(fila_destino - fila_origen) == 2 and abs(columna_destino - columna_origen) == 2:
@@ -47,6 +50,7 @@ class TableroDamas:
                         if self.obtener_pieza(fila_intermedia, columna_intermedia) != jugador and self.obtener_pieza(fila_intermedia, columna_intermedia) != 0:
                             return True
         return False
+
 
     def realizar_movimiento(self, jugador, fila_origen, columna_origen, fila_destino, columna_destino):
         if self.validar_movimiento(jugador, fila_origen, columna_origen, fila_destino, columna_destino):
