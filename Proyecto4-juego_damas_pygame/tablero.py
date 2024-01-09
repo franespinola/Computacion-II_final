@@ -1,65 +1,83 @@
-import pygame
-import sys
 
-# Definición de constantes
-ANCHO_CASILLA = 80
-FILA, COLUMNA = 8, 8
-DIMENSION_VENTANA = ANCHO_CASILLA * FILA, ANCHO_CASILLA * COLUMNA
-
-# Colores
-BLANCO = (255, 255, 255)
-NEGRO = (0, 0, 0)
-ROJO = (255, 0, 0)
-AZUL = (0, 0, 255)
-GRIS = (169, 169, 169)
-
-class JuegoDamas:
+class TableroDamas:
     def __init__(self):
-        pygame.init()
-        self.ventana = pygame.display.set_mode(DIMENSION_VENTANA)
-        pygame.display.set_caption("Juego de Damas")
-        self.reloj = pygame.time.Clock()
+        self.estado = None
+        self.inicializar_tablero()
 
-        self.iniciar_tablero()
-        self.iniciar_piezas()
+    def inicializar_tablero(self):
+        self.estado = [
+            [0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0],
+            [0, 1, 0, 1, 0, 1, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [2, 0, 2, 0, 2, 0, 2, 0],
+            [0, 2, 0, 2, 0, 2, 0, 2],
+            [2, 0, 2, 0, 2, 0, 2, 0]
+        ]
 
-    def iniciar_tablero(self):
-        self.tablero = [[0] * COLUMNA for _ in range(FILA)]
-        for fila in range(FILA):
-            for columna in range(COLUMNA):
-                color = BLANCO if (fila + columna) % 2 == 0 else NEGRO
-                pygame.draw.rect(self.ventana, color, (columna * ANCHO_CASILLA, fila * ANCHO_CASILLA, ANCHO_CASILLA, ANCHO_CASILLA))
+    def mostrar_tablero(self):
+        for fila in self.estado:
+            print(fila)
 
-    def iniciar_piezas(self):
-        for fila in range(3):
-            for columna in range(COLUMNA):
-                if (fila + columna) % 2 != 0:
-                    self.tablero[fila][columna] = 1  # 1 representa una pieza roja
+    def obtener_pieza(self, fila, columna):
+        return self.estado[fila][columna]
 
-        for fila in range(5, 8):
-            for columna in range(COLUMNA):
-                if (fila + columna) % 2 != 0:
-                    self.tablero[fila][columna] = 2  # 2 representa una pieza azul
+    def mover_pieza(self, fila_origen, columna_origen, fila_destino, columna_destino):
+        # Mueve la pieza en el tablero
+        self.estado[fila_destino][columna_destino] = self.estado[fila_origen][columna_origen]
+        self.estado[fila_origen][columna_origen] = 0  # La casilla original queda vacía
 
-    def dibujar_piezas(self):
-        for fila in range(FILA):
-            for columna in range(COLUMNA):
-                if self.tablero[fila][columna] == 1:  # Placeholder para pieza roja
-                    pygame.draw.circle(self.ventana, ROJO, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
-                elif self.tablero[fila][columna] == 2:  # Placeholder para pieza azul
-                    pygame.draw.circle(self.ventana, AZUL, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
+    def validar_movimiento(self, jugador, fila_origen, columna_origen, fila_destino, columna_destino):
+        if self.obtener_pieza(fila_origen, columna_origen) == jugador:
+            if 0 <= fila_destino < 8 and 0 <= columna_destino < 8:
+                # Verifica si la casilla de destino está vacía
+                if self.obtener_pieza(fila_destino, columna_destino) == 0:
+                    # Movimiento diagonal simple
+                    if abs(fila_destino - fila_origen) == 1 and abs(columna_destino - columna_origen) == 1:
+                        return True
+                    # Movimiento diagonal para captura (salto)
+                    elif abs(fila_destino - fila_origen) == 2 and abs(columna_destino - columna_origen) == 2:
+                        fila_intermedia = (fila_destino + fila_origen) // 2
+                        columna_intermedia = (columna_destino + columna_origen) // 2
+                        # Verifica si hay una pieza enemiga en la casilla intermedia
+                        if self.obtener_pieza(fila_intermedia, columna_intermedia) != jugador and self.obtener_pieza(fila_intermedia, columna_intermedia) != 0:
+                            return True
+        return False
 
-    def run(self):
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+    def realizar_movimiento(self, jugador, fila_origen, columna_origen, fila_destino, columna_destino):
+        if self.validar_movimiento(jugador, fila_origen, columna_origen, fila_destino, columna_destino):
+            self.mover_pieza(fila_origen, columna_origen, fila_destino, columna_destino)
 
-            self.dibujar_piezas()  # Dibuja las piezas en el tablero
-            pygame.display.flip()
-            self.reloj.tick(60)
+            # Verifica si la pieza ha llegado al extremo opuesto y la corona
+            if (jugador == 1 and fila_destino == 0) or (jugador == 2 and fila_destino == 7):
+                self.coronar_pieza(fila_destino, columna_destino)
 
-if __name__ == "__main__":
-    juego = JuegoDamas()
-    juego.run()
+            # Verifica si hay más capturas disponibles y permite múltiples saltos consecutivos
+            if self.hay_capturas_disponibles(jugador, fila_destino, columna_destino):
+                return True  # Permite al jugador realizar otro movimiento en el mismo turno
+
+            return True  # Movimiento realizado con éxito
+
+        return False
+
+    def coronar_pieza(self, fila, columna):
+        # Corona la pieza en la posición especificada
+        self.estado[fila][columna] = 3  # Puedes usar cualquier valor para representar una pieza coronada
+
+    def hay_capturas_disponibles(self, jugador, fila, columna):
+    # Verifica si hay capturas disponibles para la pieza en la posición especificada
+        for i in range(-2, 3, 4):  # Recorre las direcciones diagonal izquierda y diagonal derecha
+            for j in range(-2, 3, 4):
+                nueva_fila = fila + i
+                nueva_columna = columna + j
+
+                if 0 <= nueva_fila < 8 and 0 <= nueva_columna < 8:
+                    if self.obtener_pieza(nueva_fila, nueva_columna) == 0:
+                        # Casilla intermedia vacía, verifica si hay una pieza enemiga que pueda ser capturada
+                        fila_intermedia = (fila + nueva_fila) // 2
+                        columna_intermedia = (columna + nueva_columna) // 2
+                        if self.obtener_pieza(fila_intermedia, columna_intermedia) != jugador and self.obtener_pieza(fila_intermedia, columna_intermedia) != 0:
+                            return True
+
+        return False
