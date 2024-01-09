@@ -35,6 +35,9 @@ class TableroDamas:
                 if self.obtener_pieza(fila_destino, columna_destino) == 0:
                     # Movimiento diagonal simple
                     if abs(fila_destino - fila_origen) == 1 and abs(columna_destino - columna_origen) == 1:
+                        # Fichas rojas solo pueden avanzar hacia arriba (filas decrecientes)
+                        if jugador == 1 and fila_destino < fila_origen:
+                            return False
                         return True
                     # Movimiento diagonal para captura (salto)
                     elif abs(fila_destino - fila_origen) == 2 and abs(columna_destino - columna_origen) == 2:
