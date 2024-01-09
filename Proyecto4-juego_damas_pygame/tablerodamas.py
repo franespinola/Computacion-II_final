@@ -52,14 +52,21 @@ class TableroDamasVisual:
 
             if self.ficha_seleccionada is None:
                 pieza = self.tablero_damas.obtener_pieza(fila, columna)
-                if pieza == 1:  # Si la ficha seleccionada pertenece al Jugador 1
+                if pieza == self.turno_actual:
                     self.ficha_seleccionada = (fila, columna)
             else:
                 fila_origen, columna_origen = self.ficha_seleccionada
-                if self.tablero_damas.validar_movimiento(1, fila_origen, columna_origen, fila, columna):
-                    self.tablero_damas.realizar_movimiento(1, fila_origen, columna_origen, fila, columna)
-                    print(f"Se ha movido una ficha del Jugador 1. Turno actual: {self.turno_actual}")
-                self.ficha_seleccionada = None
+                if self.tablero_damas.validar_movimiento(self.turno_actual, fila_origen, columna_origen, fila, columna):
+                    self.tablero_damas.realizar_movimiento(self.turno_actual, fila_origen, columna_origen, fila, columna)
+                    self.ficha_seleccionada = None
+                    self.cambiar_turno()  # Cambia al siguiente jugador
+                else:
+                    # Si no es un movimiento válido, verificar si hay una ficha temporal almacenada
+                    if self.tablero_damas.obtener_pieza(fila, columna) == self.turno_actual:
+                        self.ficha_seleccionada = (fila, columna)
+
+
+
 
 
     def dibujar_casillas(self):
