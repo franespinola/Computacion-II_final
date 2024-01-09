@@ -56,6 +56,9 @@ class TableroDamas:
         if self.validar_movimiento(jugador, fila_origen, columna_origen, fila_destino, columna_destino):
             self.mover_pieza(fila_origen, columna_origen, fila_destino, columna_destino)
 
+            # Verifica si hay capturas disponibles y elimina la ficha enemiga
+            self.eliminar_ficha_enemiga(jugador, fila_origen, columna_origen, fila_destino, columna_destino)
+
             # Verifica si la pieza ha llegado al extremo opuesto y la corona
             if (jugador == 1 and fila_destino == 0) or (jugador == 2 and fila_destino == 7):
                 self.coronar_pieza(fila_destino, columna_destino)
@@ -67,7 +70,17 @@ class TableroDamas:
             return True  # Movimiento realizado con éxito
 
         return False
+    
+    def eliminar_ficha_enemiga(self, jugador, fila_origen, columna_origen, fila_destino, columna_destino):
+        # Calcula la posición intermedia
+        fila_intermedia = (fila_destino + fila_origen) // 2
+        columna_intermedia = (columna_destino + columna_origen) // 2
 
+        # Verifica si hay una ficha enemiga en la posición intermedia
+        if self.obtener_pieza(fila_intermedia, columna_intermedia) != jugador and self.obtener_pieza(fila_intermedia, columna_intermedia) != 0:
+            # Elimina la ficha enemiga
+            self.estado[fila_intermedia][columna_intermedia] = 0
+            
     def coronar_pieza(self, fila, columna):
         # Corona la pieza en la posición especificada
         self.estado[fila][columna] = 3  # Puedes usar cualquier valor para representar una pieza coronada

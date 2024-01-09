@@ -66,9 +66,6 @@ class TableroDamasVisual:
                         self.ficha_seleccionada = (fila, columna)
 
 
-
-
-
     def dibujar_casillas(self):
         for fila in range(FILA):
             for columna in range(COLUMNA):
