@@ -42,8 +42,13 @@ class TableroDamasVisual:
                 nueva_fila = fila + i
                 nueva_columna = columna + j
 
-                if 0 <= nueva_fila < 8 and 0 <= nueva_columna < 8 and self.tablero_damas.validar_movimiento(1, fila, columna, nueva_fila, nueva_columna):
-                    pygame.draw.circle(self.ventana, AZUL, (nueva_columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, nueva_fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
+                if 0 <= nueva_fila < 8 and 0 <= nueva_columna < 8 and self.tablero_damas.validar_movimiento(self.turno_actual, fila, columna, nueva_fila, nueva_columna):
+                    if self.tablero_damas.hay_capturas_disponibles(self.turno_actual, fila, columna) and not self.tablero_damas.validar_movimiento(self.turno_actual, fila, columna, nueva_fila, nueva_columna):
+                        color_circulo = GRIS  # Cambia a color gris claro
+                    else:
+                        color_circulo = AZUL if self.turno_actual == 2 else ROJO  # Ajusta el color según el jugador
+
+                    pygame.draw.circle(self.ventana, color_circulo, (nueva_columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, nueva_fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
 
     def manejar_eventos_raton(self, event):
         if event.type == MOUSEBUTTONDOWN:
