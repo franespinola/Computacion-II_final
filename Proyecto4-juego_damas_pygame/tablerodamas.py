@@ -13,7 +13,8 @@ BLANCO = (255, 255, 255)
 NEGRO = (0, 0, 0)
 ROJO = (255, 0, 0)
 AZUL = (0, 0, 255)
-GRIS = (169, 169, 169)
+AMARILLO = (255, 255, 200)  
+
 
 class TableroDamasVisual:
     def __init__(self):
@@ -44,9 +45,9 @@ class TableroDamasVisual:
 
                 if 0 <= nueva_fila < 8 and 0 <= nueva_columna < 8 and self.tablero_damas.validar_movimiento(self.turno_actual, fila, columna, nueva_fila, nueva_columna):
                     if self.tablero_damas.hay_capturas_disponibles(self.turno_actual, fila, columna) and not self.tablero_damas.validar_movimiento(self.turno_actual, fila, columna, nueva_fila, nueva_columna):
-                        color_circulo = GRIS  # Cambia a color gris claro
+                        color_circulo = AMARILLO  # color para opciones de captura
                     else:
-                        color_circulo = AZUL if self.turno_actual == 2 else ROJO  # Ajusta el color según el jugador
+                        color_circulo = AMARILLO  # color para movimiento
 
                     pygame.draw.circle(self.ventana, color_circulo, (nueva_columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, nueva_fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
 
