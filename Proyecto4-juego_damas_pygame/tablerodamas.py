@@ -14,7 +14,7 @@ NEGRO = (0, 0, 0)
 ROJO = (255, 0, 0)
 AZUL = (0, 0, 255)
 AMARILLO = (255, 255, 200)  
-
+GRIS = (169, 169, 169)
 
 class TableroDamasVisual:
     def __init__(self):
@@ -112,6 +112,8 @@ class TableroDamasVisual:
 
             pygame.display.flip()
             self.reloj.tick(60)
+            print("Estado actual del tablero:")
+            self.tablero_damas.mostrar_tablero()  # Agrega esta línea para mostrar el estado del tablero
 
 if __name__ == "__main__":
     juego_visual = TableroDamasVisual()
