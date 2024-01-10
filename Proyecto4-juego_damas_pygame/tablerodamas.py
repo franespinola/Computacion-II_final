@@ -36,7 +36,8 @@ class TableroDamasVisual:
 
     def dibujar_movimientos_validos(self, fila, columna):
         # Dibuja un círculo alrededor de la ficha seleccionada y los movimientos válidos
-        pygame.draw.circle(self.ventana, ROJO, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 + 5, 3)
+        color_contorno = AZUL if self.turno_actual == 2 else ROJO
+        pygame.draw.circle(self.ventana, color_contorno, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 + 5, 3)
 
         for i in range(-2, 3, 4):
             for j in range(-2, 3, 4):
@@ -44,11 +45,7 @@ class TableroDamasVisual:
                 nueva_columna = columna + j
 
                 if 0 <= nueva_fila < 8 and 0 <= nueva_columna < 8 and self.tablero_damas.validar_movimiento(self.turno_actual, fila, columna, nueva_fila, nueva_columna):
-                    if self.tablero_damas.hay_capturas_disponibles(self.turno_actual, fila, columna) and not self.tablero_damas.validar_movimiento(self.turno_actual, fila, columna, nueva_fila, nueva_columna):
-                        color_circulo = AMARILLO  # color para opciones de captura
-                    else:
-                        color_circulo = AMARILLO  # color para movimiento
-
+                    color_circulo = AMARILLO  # Amarillo claro para opciones de movimiento
                     pygame.draw.circle(self.ventana, color_circulo, (nueva_columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, nueva_fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
 
     def manejar_eventos_raton(self, event):
