@@ -28,6 +28,7 @@ class TableroDamas:
         self.estado[fila_origen][columna_origen] = 0  # La casilla original queda vacía
 
     def validar_movimiento(self, jugador, fila_origen, columna_origen, fila_destino, columna_destino):
+        print(f"Validando movimiento: Jugador {jugador}, Origen ({fila_origen}, {columna_origen}), Destino ({fila_destino}, {columna_destino})")
         if self.obtener_pieza(fila_origen, columna_origen) == jugador:
             if 0 <= fila_destino < 8 and 0 <= columna_destino < 8:
                 # Verifica si la casilla de destino está vacía
@@ -60,6 +61,8 @@ class TableroDamas:
 
 
     def realizar_movimiento(self, jugador, fila_origen, columna_origen, fila_destino, columna_destino):
+        print("Estado actual del tablero antes de mover la pieza:")
+        self.mostrar_tablero()
         if self.validar_movimiento(jugador, fila_origen, columna_origen, fila_destino, columna_destino):
             self.mover_pieza(fila_origen, columna_origen, fila_destino, columna_destino)
 
@@ -67,9 +70,10 @@ class TableroDamas:
             self.eliminar_ficha_enemiga(jugador, fila_origen, columna_origen, fila_destino, columna_destino)
 
             # Verifica si la pieza ha llegado al extremo opuesto y la corona
-            if (jugador == 1 and fila_destino == 0) or (jugador == 2 and fila_destino == 7):
+            if (jugador == 1 and fila_destino == 7) or (jugador == 2 and fila_destino == 0):
+                print("Antes de coronar...")
                 self.coronar_pieza(fila_destino, columna_destino)
-
+                print("Después de coronar...")
             # Verifica si hay más capturas disponibles y permite múltiples saltos consecutivos
             if self.hay_capturas_disponibles(jugador, fila_destino, columna_destino):
                 return True  # Permite al jugador realizar otro movimiento en el mismo turno
@@ -95,8 +99,13 @@ class TableroDamas:
             
     def coronar_pieza(self, fila, columna):
         # Corona la pieza en la posición especificada
-        self.estado[fila][columna] = 3  # Puedes usar cualquier valor para representar una pieza coronada
-
+        print(f"Coronando pieza en fila: {fila}, columna: {columna}")
+        if self.obtener_pieza(fila, columna) == 1:
+            self.estado[fila][columna] = 3  # Valor 3 para pieza coronada del jugador 1
+        elif self.obtener_pieza(fila, columna) == 2:
+            self.estado[fila][columna] = 4  # Valor 4 para pieza coronada del jugador 2
+        print(f"Pieza coronada correctamente en fila: {fila}, columna: {columna}. Nuevo estado del tablero:")
+        self.mostrar_tablero()
     def hay_capturas_disponibles(self, jugador, fila, columna):
     # Verifica si hay capturas disponibles para la pieza en la posición especificada
         for i in range(-2, 3, 4):  # Recorre las direcciones diagonal izquierda y diagonal derecha

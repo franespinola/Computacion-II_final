@@ -83,10 +83,12 @@ class TableroDamasVisual:
                     pygame.draw.circle(self.ventana, ROJO, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
                 elif pieza == 2:  # Pieza azul
                     pygame.draw.circle(self.ventana, AZUL, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
-                elif pieza == 3:  # Pieza coronada
+                elif pieza == 3:  # Pieza coronada para el jugador 1
                     pygame.draw.circle(self.ventana, GRIS, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
                     pygame.draw.circle(self.ventana, ROJO, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 4 - 5)
-
+                elif pieza == 4:  # Pieza coronada para el jugador 2
+                    pygame.draw.circle(self.ventana, GRIS, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
+                    pygame.draw.circle(self.ventana, AZUL, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 4 - 5)
     def mostrar_texto(self, texto, posicion):
         texto_renderizado = self.font.render(texto, True, NEGRO)
         self.ventana.blit(texto_renderizado, posicion)
@@ -112,8 +114,8 @@ class TableroDamasVisual:
 
             pygame.display.flip()
             self.reloj.tick(60)
-            print("Estado actual del tablero:")
-            self.tablero_damas.mostrar_tablero()  # Agrega esta línea para mostrar el estado del tablero
+            #print("Estado actual del tablero:")
+            #self.tablero_damas.mostrar_tablero()  # Agrega esta línea para mostrar el estado del tablero
 
 if __name__ == "__main__":
     juego_visual = TableroDamasVisual()
