@@ -7,43 +7,29 @@ Recibir los movimientos de cada cliente
 Validar los movimientos
 Actualizar el estado del tablero
 Enviar actualizaciones del tablero a ambos clientes
+
 El cliente deberá:
 
 Conectarse al servidor
 Manejar eventos del usuario y enviar los movimientos al servidor
 Recibir actualizaciones del estado del tablero y dibujarlo
 La comunicación cliente-servidor puede hacerse por sockets TCP/IP. El servidor escucha en un puerto, el cliente se conecta.
-
 El servidor y cliente deben seguir un protocolo común para codificar los mensajes con los movimientos, estado del juego, etc.
-
 Se puede usar threading en el servidor para manejar a los clientes concurrentemente.
-
 En resumen, la idea es separar la interfaz gráfica del cliente de la lógica del juego en el servidor, comunicándose por sockets. El servidor actúa como árbitro entre los dos clientes.
-
 Para mover la clase TableroDamasVisual al archivo del cliente, se pueden seguir estos pasos:
-
 Crear un nuevo archivo cliente.py que contendrá el código del cliente.
-
 Copiar la clase TableroDamasVisual completa del archivo tablerodamas.py y pegarla en cliente.py.
-
 En cliente.py agregar el código necesario para:
-
 Importar los módulos necesarios como pygame, sys, etc.
-
 Crear un objeto de la clase TableroDamasVisual y llamar al método ejecutar_juego().
 
 Conectarse al servidor.
-
 Enviar los movimientos al servidor.
-
 Recibir actualizaciones del estado del juego.
-
 Manejar el cierre adecuado con pygame.quit()
-
 En el archivo tablerodamas.py original, borrar la clase TableroDamasVisual y dejar solo el código relacionado con el tablero que no dependa de pygame.
-
 Probar que el cliente en cliente.py funcione y muestre el tablero y piezas correctamente.
-
 Después se puede continuar con la implementación del servidor y la comunicación cliente-servidor.
 
 De esta manera se separa la interfaz gráfica en el cliente del modelo del juego que puede residir en el servidor. ¡Avísame si necesitas ayuda en algún paso específico!

@@ -82,9 +82,6 @@ class TableroDamas:
     
     #me fijo en realizar_movimiento para la captura multiple
     def es_movimiento_valido_reina(self, jugador, fila_origen, columna_origen, fila_destino, columna_destino):
-        print("Debug: jugador =", jugador)
-        print("Debug: origen =", fila_origen, columna_origen)
-        print("Debug: destino =", fila_destino, columna_destino)
         if abs(fila_destino - fila_origen) != abs(columna_destino - columna_origen):
             return False
         fila_paso = 1 if fila_destino > fila_origen else -1
