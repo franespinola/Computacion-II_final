@@ -28,19 +28,63 @@ class TableroDamasVisual:
         self.reloj = pygame.time.Clock()
         self.tablero_damas = TableroDamas()
         self.font = pygame.font.SysFont(None, 30)
+        self.ficha_seleccionada = None
+        self.turno_actual = 1  
     
+    def cambiar_turno(self):
+        self.turno_actual = 1 if self.turno_actual == 2 else 2
+
+    def dibujar_movimientos_validos(self, fila, columna):
+        color_contorno = AZUL if self.turno_actual == 2 else ROJO
+        pygame.draw.circle(self.ventana, color_contorno, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 + 5, 3)
+
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if i == 0 and j == 0:
+                    continue  # No dibujar la casilla actual
+                nueva_fila = fila + i
+                nueva_columna = columna + j
+                while 0 <= nueva_fila < 8 and 0 <= nueva_columna < 8:
+                    if self.tablero_damas.validar_movimiento(self.turno_actual, fila, columna, nueva_fila, nueva_columna):
+                        color_circulo = AMARILLO
+                        pygame.draw.circle(self.ventana, color_circulo, (nueva_columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, nueva_fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
+                    nueva_fila += i
+                    nueva_columna += j
+
     def manejar_eventos_raton(self, event):
         if event.type == MOUSEBUTTONDOWN:
             fila, columna = self.obtener_posicion_clic(event)
-            if self.tablero_damas.ficha_seleccionada is None:
-                self.tablero_damas.seleccionar_ficha(fila, columna)
+            if self.ficha_seleccionada is None:
+                self.seleccionar_ficha(fila, columna)
             else:
-                self.tablero_damas.mover_ficha(fila, columna)
+                self.mover_ficha(fila, columna)
 
     def obtener_posicion_clic(self, event):
         fila = event.pos[1] // ANCHO_CASILLA
         columna = event.pos[0] // ANCHO_CASILLA
         return fila, columna
+
+    def seleccionar_ficha(self, fila, columna):
+        pieza = self.tablero_damas.obtener_pieza(fila, columna)
+        if pieza == self.turno_actual or (self.turno_actual == 1 and pieza == DAMA_ROJA) or (self.turno_actual == 2 and pieza == DAMA_AZUL):
+            self.ficha_seleccionada = (fila, columna)
+            self.captura_en_turno = False  # Inicializa la variable de captura en el turno
+            self.ficha_captura = None  # Inicializa la ficha que realizó la captura
+        else:
+            self.ficha_seleccionada = None  # Deselecciona la ficha actualmente seleccionada
+
+    def mover_ficha(self, fila, columna):
+        fila_origen, columna_origen = self.ficha_seleccionada
+        if self.tablero_damas.validar_movimiento(self.turno_actual, fila_origen, columna_origen, fila, columna):
+            self.tablero_damas.realizar_movimiento(self.turno_actual, fila_origen, columna_origen, fila, columna)
+            if abs(fila - fila_origen) == 2:  # Si el movimiento fue una captura
+                self.captura_en_turno = True  # Marca que hubo una captura en este turno
+                self.ficha_captura = (fila, columna)  # Almacena la ficha que realizó la captura
+            self.ficha_seleccionada = None
+            if not self.captura_en_turno or not self.tablero_damas.hay_capturas_disponibles(self.turno_actual, fila, columna) or (fila, columna) != self.ficha_captura:
+                self.cambiar_turno()  # Cambia al siguiente jugador solo si no hay más capturas disponibles, o si no hubo una captura en este turno, o si la ficha que se mueve no es la que realizó la captura
+        else:
+            self.seleccionar_ficha(fila, columna)  # Selecciona una nueva ficha si el movimiento no es válido
 
     def dibujar_casillas(self):
         for fila in range(FILA):
@@ -63,15 +107,6 @@ class TableroDamasVisual:
                     pygame.draw.circle(self.ventana, GRIS, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
                     pygame.draw.circle(self.ventana, AZUL, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 4 - 5)
     
-    def dibujar_movimientos_validos(self, fila, columna):
-        color_contorno = AZUL if self.tablero_damas.turno_actual == 2 else ROJO
-        pygame.draw.circle(self.ventana, color_contorno, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 + 5, 3)
-        movimientos_validos = self.tablero_damas.calcular_movimientos_validos(fila, columna)
-        for movimiento in movimientos_validos:
-            nueva_fila, nueva_columna = movimiento
-            color_circulo = AMARILLO
-            pygame.draw.circle(self.ventana, color_circulo, (nueva_columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, nueva_fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
-    
     def mostrar_texto(self, texto, posicion):
         texto_renderizado = self.font.render(texto, True, NEGRO)
         self.ventana.blit(texto_renderizado, posicion)
@@ -87,10 +122,10 @@ class TableroDamasVisual:
             self.ventana.fill(BLANCO)
             self.dibujar_casillas()
             self.dibujar_piezas()
-            if self.tablero_damas.ficha_seleccionada is not None:
-                fila, columna = self.tablero_damas.ficha_seleccionada
+            if self.ficha_seleccionada is not None:
+                fila, columna = self.ficha_seleccionada
                 self.dibujar_movimientos_validos(fila, columna)
-            self.mostrar_texto(f"Turno del Jugador: {self.tablero_damas.turno_actual}", (10, DIMENSION_VENTANA[1] - 40))
+            self.mostrar_texto(f"Turno del Jugador: {self.turno_actual}", (10, DIMENSION_VENTANA[1] - 40))
             pygame.display.flip()
             self.reloj.tick(60)
 
