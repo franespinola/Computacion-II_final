@@ -28,7 +28,17 @@ class TableroDamasVisual:
         self.reloj = pygame.time.Clock()
         self.tablero_damas = TableroDamas()
         self.font = pygame.font.SysFont(None, 30)
-    
+        #----------estilos e imagenes para reinas----------------------#
+        self.imagen_reina_roja = pygame.image.load('Proyecto4-juego_damas_pygame/img/damaRoja.png')  
+        self.imagen_reina_roja = pygame.transform.scale(self.imagen_reina_roja, (ANCHO_CASILLA, ANCHO_CASILLA))
+        self.imagen_reina_azul = pygame.image.load('Proyecto4-juego_damas_pygame/img/damaAzul.png')
+        self.imagen_reina_azul = pygame.transform.scale(self.imagen_reina_azul, (ANCHO_CASILLA, ANCHO_CASILLA))
+        #----------estilos e imagenes para fichas----------------------#
+        self.imagen_ficha_roja = pygame.image.load('Proyecto4-juego_damas_pygame/img/fichaRoja.png')  
+        self.imagen_ficha_roja = pygame.transform.scale(self.imagen_ficha_roja, (ANCHO_CASILLA, ANCHO_CASILLA))
+        self.imagen_ficha_azul = pygame.image.load('Proyecto4-juego_damas_pygame/img/fichaAzul.png')  
+        self.imagen_ficha_azul = pygame.transform.scale(self.imagen_ficha_azul, (ANCHO_CASILLA, ANCHO_CASILLA))
+
     def manejar_eventos_raton(self, event):
         if event.type == MOUSEBUTTONDOWN:
             fila, columna = self.obtener_posicion_clic(event)
@@ -53,16 +63,14 @@ class TableroDamasVisual:
             for columna in range(COLUMNA):
                 pieza = self.tablero_damas.obtener_pieza(fila, columna)
                 if pieza == PIEZA_ROJA:
-                    pygame.draw.circle(self.ventana, ROJO, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
+                    self.ventana.blit(self.imagen_ficha_roja, (columna * ANCHO_CASILLA, fila * ANCHO_CASILLA))
                 elif pieza == PIEZA_AZUL: 
-                    pygame.draw.circle(self.ventana, AZUL, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
+                    self.ventana.blit(self.imagen_ficha_azul, (columna * ANCHO_CASILLA, fila * ANCHO_CASILLA))
                 elif pieza == DAMA_ROJA:
-                    pygame.draw.circle(self.ventana, GRIS, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
-                    pygame.draw.circle(self.ventana, ROJO, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 4 - 5)
+                    self.ventana.blit(self.imagen_reina_roja, (columna * ANCHO_CASILLA, fila * ANCHO_CASILLA))
                 elif pieza == DAMA_AZUL:
-                    pygame.draw.circle(self.ventana, GRIS, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 - 5)
-                    pygame.draw.circle(self.ventana, AZUL, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 4 - 5)
-    
+                    self.ventana.blit(self.imagen_reina_azul, (columna * ANCHO_CASILLA, fila * ANCHO_CASILLA))
+
     def dibujar_movimientos_validos(self, fila, columna):
         color_contorno = AZUL if self.tablero_damas.turno_actual == 2 else ROJO
         pygame.draw.circle(self.ventana, color_contorno, (columna * ANCHO_CASILLA + ANCHO_CASILLA // 2, fila * ANCHO_CASILLA + ANCHO_CASILLA // 2), ANCHO_CASILLA // 2 + 5, 3)
