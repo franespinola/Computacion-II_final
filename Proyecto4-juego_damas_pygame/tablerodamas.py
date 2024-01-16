@@ -28,6 +28,9 @@ class TableroDamasVisual:
         self.reloj = pygame.time.Clock()
         self.tablero_damas = TableroDamas()
         self.font = pygame.font.SysFont(None, 30)
+        self.cargar_imagenes()
+
+    def cargar_imagenes(self):
         #----------estilos e imagenes para reinas----------------------#
         self.imagen_reina_roja = pygame.image.load('Proyecto4-juego_damas_pygame/img/damaRoja.png')  
         self.imagen_reina_roja = pygame.transform.scale(self.imagen_reina_roja, (ANCHO_CASILLA, ANCHO_CASILLA))
