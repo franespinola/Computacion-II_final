@@ -1,35 +1,37 @@
-Mover la clase TableroDamasVisual al archivo del cliente. Esta clase se encargará de la interfaz gráfica y eventos de usuario en cada cliente.
+He aquí algunas sugerencias para completar tus archivos cliente-servidor para el juego de damas:
 
-Crear una clase Servidor que mantenga el estado del tablero y la lógica del juego. El servidor deberá:
+En servidor.py:
 
-Aceptar conexiones de dos clientes (jugadores)
-Recibir los movimientos de cada cliente
-Validar los movimientos
-Actualizar el estado del tablero
-Enviar actualizaciones del tablero a ambos clientes
+1. Agrega una clase Tablero que almacene el estado del juego. 
 
-El cliente deberá:
+2. En actualizar_estado(), modifica el estado del Tablero según el movimiento recibido y valida que sea válido.
 
-Conectarse al servidor
-Manejar eventos del usuario y enviar los movimientos al servidor
-Recibir actualizaciones del estado del tablero y dibujarlo
-La comunicación cliente-servidor puede hacerse por sockets TCP/IP. El servidor escucha en un puerto, el cliente se conecta.
-El servidor y cliente deben seguir un protocolo común para codificar los mensajes con los movimientos, estado del juego, etc.
-Se puede usar threading en el servidor para manejar a los clientes concurrentemente.
-En resumen, la idea es separar la interfaz gráfica del cliente de la lógica del juego en el servidor, comunicándose por sockets. El servidor actúa como árbitro entre los dos clientes.
-Para mover la clase TableroDamasVisual al archivo del cliente, se pueden seguir estos pasos:
-Crear un nuevo archivo cliente.py que contendrá el código del cliente.
-Copiar la clase TableroDamasVisual completa del archivo tablerodamas.py y pegarla en cliente.py.
-En cliente.py agregar el código necesario para:
-Importar los módulos necesarios como pygame, sys, etc.
-Crear un objeto de la clase TableroDamasVisual y llamar al método ejecutar_juego().
+3. En obtener_estado(), devuelve el estado actual del Tablero serializado.
 
-Conectarse al servidor.
-Enviar los movimientos al servidor.
-Recibir actualizaciones del estado del juego.
-Manejar el cierre adecuado con pygame.quit()
-En el archivo tablerodamas.py original, borrar la clase TableroDamasVisual y dejar solo el código relacionado con el tablero que no dependa de pygame.
-Probar que el cliente en cliente.py funcione y muestre el tablero y piezas correctamente.
-Después se puede continuar con la implementación del servidor y la comunicación cliente-servidor.
+4. Agrega lógica para identificar ganador cuando sea necesario.
 
-De esta manera se separa la interfaz gráfica en el cliente del modelo del juego que puede residir en el servidor. ¡Avísame si necesitas ayuda en algún paso específico!
+En cliente.py: 
+
+1. Agrega una interfaz gráfica simple con PyGame para mostrar el tablero.
+
+2. Renderiza el estado recibido para mostrarlo. 
+
+3. Captura los clics del usuario y arma un movimiento serializable.
+
+4. Envía el movimiento al servidor cuando el usuario haga clic.
+
+En common.py:
+
+1. Crea clases Tablero y Movimiento que se compartan entre cliente y servidor.
+
+2. Serializa/deserializa estos objetos con pickle.
+
+3. Define constantes y funciones comunes.
+
+En game.py:
+
+1. Instancia servidor y cliente en hilos diferentes.
+
+2. Controla la lógica principal del juego.
+
+Esto debería completar la estructura básica. Luego puedes agregar detalles como captura múltiple, coronación, etc. Avísame si necesitas ayuda en algo específico.
