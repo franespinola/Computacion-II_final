@@ -1,0 +1,64 @@
+1. Clase Producto:
+
+Atributos:
+id: Identificador único del producto.
+nombre: Nombre del producto (plato o bebida).
+precio: Precio del producto.
+categoria: Categoría del producto (plato principal, entrada, bebida, etc.).
+descripcion: Descripción del producto.
+Métodos:
+__init__(self, id, nombre, precio, categoria, descripcion): Inicializa los atributos del producto.
+to_string(self): Devuelve una cadena con la información del producto.
+
+
+2. Clase PedidoItem:
+
+Atributos:
+producto: Objeto Producto que representa el item del pedido.
+cantidad: Cantidad del producto pedida.
+observaciones: Observaciones del cliente sobre el producto (modificaciones, alergias, etc.).
+Métodos:
+__init__(self, producto, cantidad, observaciones): Inicializa los atributos del item del pedido.
+calcular_subtotal(self): Calcula el subtotal del item del pedido (precio * cantidad).
+to_string(self): Devuelve una cadena con la información del item del pedido.
+
+
+3. Clase Pedido:
+
+Atributos:
+id: Identificador único del pedido.
+cliente: Nombre del cliente.
+mesa: Número de mesa del cliente.
+estado: Estado del pedido (en curso, listo, entregado).
+items: Lista de objetos PedidoItem que conforman el pedido.
+total: Total del pedido (suma de subtotales de items).
+Métodos:
+__init__(self, id, cliente, mesa): Inicializa los atributos del pedido.
+agregar_item(self, producto, cantidad, observaciones): Agrega un item al pedido.
+modificar_item(self, id_item, cantidad, observaciones): Modifica la cantidad o las observaciones de un item del pedido.
+eliminar_item(self, id_item): Elimina un item del pedido.
+calcular_total(self): Calcula el total del pedido (suma de subtotales de items).
+enviar_a_cocina(self): Envía el pedido a la cocina de forma digital.
+notificar_cliente_pedido_listo(self): Envía un mensaje al cliente indicando que el pedido está listo.
+to_string(self): Devuelve una cadena con la información del pedido.
+
+
+4. Clase Cocina:
+
+Atributos:
+pedidos: Lista de objetos Pedido pendientes de preparación.
+pedidos_listos: Lista de objetos Pedido listos para ser entregados.
+Métodos:
+procesar_pedido(self, pedido): Marca el pedido como "en curso" y simula el tiempo de preparación.
+notificar_pedido_listo(self, pedido): Mueve el pedido de "pendientes" a "listos" y notifica al restaurante.
+
+5. Clase Restaurante:
+
+Atributos:
+carta: Lista de objetos Producto que conforman la carta del restaurante.
+pedidos: Lista de objetos Pedido en curso o listos.
+cocina: Objeto Cocina del restaurante.
+Métodos:
+mostrar_carta(self): Muestra la carta del restaurante al cliente.
+tomar_pedido(self): Crea un nuevo objeto Pedido, permite al cliente seleccionar items y envía el pedido a la cocina.
+mostrar_pedidos(self): Muestra la lista de pedidos en curso o listos al cliente.

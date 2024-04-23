@@ -1,63 +1,55 @@
-# Echo server program
+# servidor.py
+
 import socket
-import sys
 import threading
-import comidas
+from producto import Producto
+from restaurante import Restaurante
+
+
+carta = [
+    Producto(1, "Hamburguesa", 12.50, "Plato principal", "Carne, queso, tomate, lechuga."),
+    Producto(2, "Papas fritas", 3.50, "Guarnición", "Papas fritas cortadas en juliana."),
+    Producto(3, "Coca-Cola", 2.50, "Bebida", "Refresco de cola."),
+]
+
+restaurante = Restaurante(carta)
 
 def handle_client(client_socket):
-    # Handle the client connection: receive data, then send it back
-    menu_json = comidas.menu_a_json(comidas.menu)
-    client_socket.send(menu_json.encode())
-
-    # Recibir la selección del cliente
-    seleccion = client_socket.recv(1024).decode()
-    print(f"Cliente seleccionó: {seleccion}")
-
-    # Manejar la selección del cliente
-    comidas.manejar_seleccion(client_socket, seleccion)
-
-    client_socket.close()
+    while True:
+        # Recibir la elección del cliente
+        data = client_socket.recv(1024)
+        if not data:
+            break
+        opcion = data.decode()
+        if opcion == "1":
+            respuesta = restaurante.mostrar_carta()
+        elif opcion == "2":
+            respuesta = restaurante.tomar_pedido()
+        elif opcion == "3":
+            respuesta = restaurante.mostrar_pedidos()
+        elif opcion == "4":
+            respuesta = "Saliendo del programa."
+            client_socket.sendall(respuesta.encode())
+            break
+        else:
+            respuesta = "Opción no válida."
+        client_socket.sendall(respuesta.encode())
 
 def server_loop():
-    HOST = 'localhost'              # Symbolic name meaning all available interfaces
-    PORT = 50007              # Arbitrary non-privileged port
-    s = None
-    for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC,
-                                  socket.SOCK_STREAM, 0, socket.AI_PASSIVE):
-        af, socktype, proto, canonname, sa = res
-        try:
-            s = socket.socket(af, socktype, proto)
-        except OSError as msg:
-            s = None
-            continue
-        try:
-            s.bind(sa)
-            s.listen(5)
-        except OSError as msg:
-            s.close()
-            s = None
-            continue
-        break
-    if s is None:
-        print('could not open socket')
-        sys.exit(1)
+    HOST = 'localhost'
+    PORT = 50007
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((HOST, PORT))
+    s.listen(5)
 
-    while True:  # Agregamos un bucle externo para seguir aceptando nuevas conexiones
+    while True:
         conn, addr = s.accept()
         client_thread = threading.Thread(target=handle_client, args=(conn,))
         client_thread.start()
 
-server_thread = threading.Thread(target=server_loop, daemon=True)
+server_loop()
 
-# Start the server thread
-server_thread.start()
 
-try:
-    # Wait for keyboard interrupt
-    while True: pass
-except KeyboardInterrupt:
-    print("Server shutting down.")
-    sys.exit(0)
     
 
 

@@ -1,28 +1,24 @@
-# Echo client program
-import socket
-import sys
+# cliente.py
 
-HOST = 'localhost'    # The remote host
-PORT = 50007              # The same port as used by the server
-s = None
-for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC, socket.SOCK_STREAM):
-    af, socktype, proto, canonname, sa = res
-    try:
-        s = socket.socket(af, socktype, proto)
-    except OSError as msg:
-        s = None
-        continue
-    try:
-        s.connect(sa)
-    except OSError as msg:
-        s.close()
-        s = None
-        continue
-    break
-if s is None:
-    print('could not open socket')
-    sys.exit(1)
-with s:
-    s.sendall(b'Hello, world')
+import socket
+
+HOST = 'localhost'
+PORT = 50007
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((HOST, PORT))
+
+while True:
+    print("\nOpciones:")
+    print("1. Mostrar carta")
+    print("2. Tomar pedido")
+    print("3. Mostrar pedidos")
+    print("4. Salir")
+
+    opcion = input("Ingrese opción: ")
+    s.sendall(opcion.encode())
+
     data = s.recv(1024)
-print('Received', repr(data))
+    if not data:
+        break
+    print('Received', repr(data.decode()))
