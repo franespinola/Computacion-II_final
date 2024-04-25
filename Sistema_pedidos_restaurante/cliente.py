@@ -1,5 +1,3 @@
-# cliente.py
-
 import socket
 
 HOST = 'localhost'
@@ -21,4 +19,7 @@ while True:
     data = s.recv(1024)
     if not data:
         break
-    print('Received', repr(data.decode()))
+    respuesta = data.decode()
+    print(repr(respuesta))
+    if respuesta == "Saliendo del programa.":
+        socket.close()

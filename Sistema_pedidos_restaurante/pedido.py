@@ -1,5 +1,3 @@
-# pedido.py
-
 import time
 from producto import PedidoItem
 

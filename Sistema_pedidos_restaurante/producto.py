@@ -1,5 +1,3 @@
-# producto.py
-
 class Producto:
     def __init__(self, id, nombre, precio, categoria, descripcion):
         self.id = id

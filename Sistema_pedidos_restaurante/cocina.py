@@ -1,5 +1,3 @@
-# cocina.py
-
 import time
 
 class Cocina:
