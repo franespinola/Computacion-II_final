@@ -2,17 +2,10 @@
 
 import socket
 import threading
-from producto import Producto
 from restaurante import Restaurante
+from menus import carta
 
-
-carta = [
-    Producto(1, "Hamburguesa", 12.50, "Plato principal", "Carne, queso, tomate, lechuga."),
-    Producto(2, "Papas fritas", 3.50, "Guarnición", "Papas fritas cortadas en juliana."),
-    Producto(3, "Coca-Cola", 2.50, "Bebida", "Refresco de cola."),
-]
-
-restaurante = Restaurante(carta)
+restaurante = Restaurante(carta) #tengo que pasar la carta como parametro
 
 def handle_client(client_socket):
     while True:
@@ -29,8 +22,6 @@ def handle_client(client_socket):
             respuesta = restaurante.mostrar_pedidos()
         elif opcion == "4":
             respuesta = "Saliendo del programa."
-            client_socket.sendall(respuesta.encode())
-            break
         else:
             respuesta = "Opción no válida."
         client_socket.sendall(respuesta.encode())
@@ -42,11 +33,13 @@ def server_loop():
     s.bind((HOST, PORT))
     s.listen(5)
 
-    while True:
-        conn, addr = s.accept()
-        client_thread = threading.Thread(target=handle_client, args=(conn,))
-        client_thread.start()
-
+    try:
+        while True:
+            conn, addr = s.accept()
+            client_thread = threading.Thread(target=handle_client, args=(conn,))
+            client_thread.start()
+    except KeyboardInterrupt:
+        print("\nSaliendo del programa.")
 server_loop()
 
 

@@ -24,20 +24,42 @@ class Restaurante:
         self.mostrar_carta()
 
         while True:
-            id_producto = int(input("Ingrese ID del producto a agregar: "))
-            cantidad = int(input("Ingrese cantidad: "))
-            observaciones = input("Observaciones (opcional): ")
+            print("\nOpciones:")
+            print("1. Agregar producto al pedido")
+            print("2. Eliminar producto del pedido")
+            print("3. Modificar producto del pedido")
+            print("4. Finalizar pedido")
 
-            producto = next((p for p in self.carta if p.id == id_producto), None)
+            opcion = input("Ingrese opción: ")
 
-            if producto:
-                nuevo_pedido.agregar_item(producto, cantidad, observaciones)
-                print(f"Producto {producto.nombre} agregado al pedido.")
-                continuar = input("¿Desea agregar otro producto? (s/n): ")
-                if continuar.lower() != "s":
+            if opcion == "1": #agregar un producto al pedido
+                id_producto = int(input("Ingrese ID del producto a agregar: "))
+                cantidad = int(input("Ingrese cantidad: "))
+                observaciones = input("Observaciones (opcional): ")
+
+                producto = next((p for p in self.carta if p.id == id_producto), None)
+
+                if producto:
+                    nuevo_pedido.agregar_item(producto, cantidad, observaciones)
+                    print(f"Producto {producto.nombre} agregado al pedido.")
+                else:
+                    print(f"Producto con ID {id_producto} no encontrado.")
+            elif opcion == "2": #eliminar un producto del pedido
+                id_producto = int(input("Ingrese ID del producto a eliminar: "))
+                nuevo_pedido.eliminar_item(id_producto)
+            elif opcion == "3": #modificar un producto del pedido
+                id_producto = int(input("Ingrese ID del producto a modificar: "))
+                cantidad = int(input("Ingrese nueva cantidad: "))
+                observaciones = input("Nuevas observaciones (opcional): ")
+                nuevo_pedido.modificar_item(id_producto, cantidad, observaciones)
+            elif opcion == "4":
+                if not nuevo_pedido.items:
+                    print("Selecciona algún pedido.")
+                    continue
+                else:
                     break
             else:
-                print(f"Producto con ID {id_producto} no encontrado.")
+                print("Opción no válida.")
 
         nuevo_pedido.calcular_total()
         print(f"\nResumen del pedido:\n{nuevo_pedido}")
@@ -50,10 +72,10 @@ class Restaurante:
         else:
             print("Pedido cancelado.")
 
+
     def mostrar_pedidos(self):
         if not self.pedidos:
-            print("No hay pedidos en curso o listos.")
-            return
+            return "no hay pedidos todavia"
 
         print("\nPedidos en curso:")
         for pedido in self.pedidos:
