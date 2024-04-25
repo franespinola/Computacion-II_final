@@ -15,10 +15,7 @@ class Restaurante:
         pedido_id = len(self.pedidos) + 1
         cliente = input("Nombre del cliente: ")
         mesa = int(input("Número de mesa: "))
-
         nuevo_pedido = Pedido(pedido_id, cliente, mesa)
-
-        print("\nMostrando carta:")
         self.mostrar_carta()
 
         while True:

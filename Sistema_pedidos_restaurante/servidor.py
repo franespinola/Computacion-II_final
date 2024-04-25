@@ -30,14 +30,10 @@ def server_loop():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((HOST, PORT))
     s.listen(5)
-
-    try:
-        while True:
+    while True:
             conn, addr = s.accept()
             client_thread = threading.Thread(target=handle_client, args=(conn,))
             client_thread.start()
-    except KeyboardInterrupt:
-        print("\nSaliendo del programa.")
 server_loop()
 
 
