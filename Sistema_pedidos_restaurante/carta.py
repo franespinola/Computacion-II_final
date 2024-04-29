@@ -1,4 +1,4 @@
-from Producto import Producto
+from producto import Producto
 carta = [
     Producto(1, "Hamburguesa", 12.50, "Plato principal", "Carne, queso, tomate, lechuga."),
     Producto(2, "Papas fritas", 3.50, "Guarnición", "Papas fritas cortadas en juliana."),

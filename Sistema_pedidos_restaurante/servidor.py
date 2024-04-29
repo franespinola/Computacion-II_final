@@ -1,41 +1,38 @@
 import socket
-import pickle
-from Cliente import Cliente
+import threading
 
-def main():
+def handle_client(client_socket):
+    while True:
+        data = client_socket.recv(1024)
+        if not data:
+            break
+        opcion = data.decode()             #traigo el numero que selecciono el cliente y hago la decodificacion ya que viene en bytes, lo transforma a string
+        print("Opción recibida:", opcion)
+        if opcion == "1":
+            respuesta = "Mostrando carta."
+        elif opcion == "2":
+            respuesta = "Tomando pedido."
+        elif opcion == "3":
+            respuesta = "Mostrando pedidos."
+        elif opcion == "4":
+            respuesta = "Saliendo del programa."
+        else:
+            respuesta = "Opción no válida."
+        client_socket.sendall(respuesta.encode())
+
+def server():
     HOST = 'localhost'
     PORT = 50007
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((HOST, PORT))
+    s.listen(5)
 
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((HOST, PORT))
-        s.listen()
+    while True:
+        conn, addr = s.accept()
+        client_thread = threading.Thread(target=handle_client, args=(conn,))
+        client_thread.start()
+server()
 
-        print(f"Servidor escuchando en {HOST}:{PORT}")
-
-        while True:
-            conn, addr = s.accept()
-            with conn:
-                print(f"Conexión establecida desde {addr}")
-                data = conn.recv(1024)
-                method, args = pickle.loads(data)
-
-                if method == "mostrar_carta":
-                    response = Cliente.mostrar_carta()
-                elif method == "tomar_pedido":
-                    response = Cliente.tomar_pedido(*args)
-                elif method == "mostrar_pedido":
-                    response = Cliente.mostrar_pedido(*args)
-                elif method == "modificar_pedido":
-                    response = Cliente.modificar_pedido(*args)
-                elif method == "eliminar_pedido":
-                    response = Cliente.eliminar_pedido(*args)
-                else:
-                    response = "Método no válido"
-
-                conn.sendall(pickle.dumps(response))
-
-if __name__ == "__main__":
-    main()
 
 
 
