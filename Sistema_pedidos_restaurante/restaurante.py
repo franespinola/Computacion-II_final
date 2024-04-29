@@ -21,7 +21,7 @@ class Restaurante:
         nuevo_pedido = Pedido(pedido_id, cliente, mesa)
 
         print("\nMostrando carta:")
-        self.mostrar_carta()
+        print(self.mostrar_carta())
 
         while True:
             print("\nOpciones:")
