@@ -32,16 +32,34 @@ def handle_client(client_socket):
             cantidad = client_socket.recv(1024).decode() # Recibir la cantidad
             observaciones = client_socket.recv(1024).decode() # Recibir las observaciones
             restaurante.tomar_pedido(nombre, producto, cantidad, observaciones)  # Tomar un pedido usando el método de Restaurante
-
         
     #-------------Mostrar pedido---------------------------------------- #     
         elif opcion == "3":
             client_socket.sendall(restaurante.mostrar_pedidos().encode())
+            pregunta = client_socket.recv(1024).decode()
+            if pregunta.lower() == 's':
+                producto = client_socket.recv(1024).decode()
+                cantidad = client_socket.recv(1024).decode()
+                restaurante.tomar_pedido(nombre, producto, cantidad, observaciones)  # Tomar un pedido usando el método de Restaurante
+                client_socket.sendall(restaurante.mostrar_pedidos().encode())
         
         elif opcion == "4":
-            respuesta = "Saliendo del programa."
+            respuesta = "Modificando pedido."
             client_socket.sendall(respuesta.encode())
-        
+            id_pedido = client_socket.recv(1024).decode()
+            producto = client_socket.recv(1024).decode()
+            cantidad = client_socket.recv(1024).decode()
+            observaciones = client_socket.recv(1024).decode()
+            client_socket.sendall(restaurante.modificar_pedido(id_pedido, producto, cantidad, observaciones).encode())
+            print("anda bien")
+
+        elif opcion == "5":
+            respuesta = "Eliminando pedido."
+            client_socket.sendall(respuesta.encode())
+            id_pedido = client_socket.recv(1024).decode()
+            print(type(id_pedido))
+            client_socket.sendall(restaurante.eliminar_pedido(id_pedido).encode())
+
         else:
             respuesta = "Opción no válida."
             client_socket.sendall(respuesta.encode())

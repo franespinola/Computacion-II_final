@@ -12,13 +12,15 @@ try:
         print("1. Mostrar carta")
         print("2. Tomar pedido")
         print("3. Mostrar pedidos")
-        print("4. Salir")
+        print("4. Modificar pedido")
+        print("5. Eliminar pedido")
+        print("6. Salir")
 
         opcion = input("Ingrese opción: ")
-        s.sendall(opcion.encode()) #convierto en bytes la cadena de texto para que pueda ser enviada a traves del socket con s.sendall
-        respuesta = s.recv(1024).decode() #decodificamos la respuesta del servidor para que pueda ser leida como una cadena de texto
-        print (respuesta) #recibo la respuesta del servidor y la imprimo en pantalla
-        
+        s.sendall(opcion.encode())
+        respuesta = s.recv(1024).decode()
+        print(respuesta)
+
         if opcion == "2":
             nombre = input("Ingrese su nombre: ")
             s.sendall(nombre.encode())
@@ -27,11 +29,33 @@ try:
             cantidad = int(input("Ingrese la cantidad: "))
             s.sendall(str(cantidad).encode())
             observaciones = input("Ingrese las observaciones: ")
-            s.sendall(observaciones.encode())
-            #pregunta= print("¿Desea agregar otro producto al pedido? (s/n)")
-            #s.sendall(pregunta.encode())
-        
-        if opcion == "4":
+            s.sendall(str(observaciones).encode())
+
+        elif opcion == "3":
+            pregunta = input("¿Desea agregar otro producto al pedido? (s/n)")
+            s.sendall(pregunta.encode())
+            if pregunta.lower() == 's':
+                producto = int(input("Ingrese el producto para agregar al pedido(ID): "))
+                s.sendall(str(producto).encode())
+                cantidad = int(input("Ingrese la cantidad: "))
+                s.sendall(str(cantidad).encode())
+
+        elif opcion == "4":
+            id_pedido = int(input("Ingrese el ID del pedido a modificar: "))
+            s.sendall(str(id_pedido).encode())
+            producto = int(input("Ingrese el nuevo producto (ID): "))
+            s.sendall(str(producto).encode())
+            cantidad = int(input("Ingrese la nueva cantidad: "))
+            s.sendall(str(cantidad).encode())
+            observaciones = input("Ingrese las nuevas observaciones: ")
+            s.sendall(str(observaciones).encode())
+
+        elif opcion == "5":
+            id_pedido = int(input("Ingrese el ID del pedido a eliminar: "))
+            s.sendall(str(id_pedido).encode())
+            print("Pedido eliminado.")
+
+        elif opcion == "6":
             break
 finally:
     s.close()

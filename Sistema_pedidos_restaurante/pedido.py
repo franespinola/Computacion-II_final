@@ -18,12 +18,3 @@ class Pedido:
         Observaciones: {self.observaciones}
         """
 
-    def modificar_item(self, producto, cantidad, observaciones):
-        self.producto = producto
-        self.cantidad = cantidad
-        self.observaciones = observaciones
-
-    def eliminar_item(self):
-        self.producto = None
-        self.cantidad = None
-        self.observaciones = None
