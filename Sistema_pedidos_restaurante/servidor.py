@@ -1,19 +1,15 @@
 import socket
 import threading
 from carta import carta
-from pedido import Pedido
+from restaurante import Restaurante
 from collections import defaultdict
 from colorama import Fore, Style
 
 def handle_client(client_socket):
-
+    restaurante = Restaurante(carta) 
     while True:
 
-        data = client_socket.recv(1024) #aca viene los datos en bytes(mas abajo los transformo a string)
-        print("Data recibida:", data) 
-        if not data:
-            break
-        opcion = data.decode()  #hago la decodificacion de los datos con decode
+        opcion = client_socket.recv(1024).decode()  #hago la decodificacion de los datos con decode. Recordando que vienen en bytes
         print("Opción recibida:", opcion)
 
     #-------------Mostrar carta---------------------------------------- #   
@@ -25,6 +21,7 @@ def handle_client(client_socket):
             for categoria in productos_por_categoria:
                 respuesta += f"\n\n{Fore.GREEN}{categoria}{Style.RESET_ALL}:\n\n" # Agregar el título de la categoría
                 respuesta += "\n".join(str(producto) for producto in productos_por_categoria[categoria]) # Agregar los productos de la categoría
+            client_socket.sendall(respuesta.encode())
 
     #-------------Tomar pedido---------------------------------------- # 
         elif opcion == "2":
@@ -34,19 +31,21 @@ def handle_client(client_socket):
             producto = client_socket.recv(1024).decode() # Recibir el producto
             cantidad = client_socket.recv(1024).decode() # Recibir la cantidad
             observaciones = client_socket.recv(1024).decode() # Recibir las observaciones
-            pedido=Pedido(nombre, producto, cantidad, observaciones) # Crear un pedido con los datos recibidos
-            print(pedido)
+            restaurante.tomar_pedido(nombre, producto, cantidad, observaciones)  # Tomar un pedido usando el método de Restaurante
+
         
     #-------------Mostrar pedido---------------------------------------- #     
         elif opcion == "3":
-            respuesta = "Mostrando pedidos."
+            client_socket.sendall(restaurante.mostrar_pedidos().encode())
         
         elif opcion == "4":
             respuesta = "Saliendo del programa."
+            client_socket.sendall(respuesta.encode())
         
         else:
             respuesta = "Opción no válida."
-        client_socket.sendall(respuesta.encode())
+            client_socket.sendall(respuesta.encode())
+        
 
 def server():
     HOST = 'localhost'

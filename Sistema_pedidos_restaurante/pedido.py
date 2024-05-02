@@ -7,7 +7,7 @@ class Pedido:
         self.producto = producto
         self.cantidad = cantidad
         self.observaciones = observaciones
-        Pedido.id += 1
+        Pedido.id += 1  #por cada instancia q se crea se incrementa el id
 
     def __str__(self):
         return f"""

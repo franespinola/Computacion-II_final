@@ -28,6 +28,9 @@ try:
             s.sendall(str(cantidad).encode())
             observaciones = input("Ingrese las observaciones: ")
             s.sendall(observaciones.encode())
+            #pregunta= print("¿Desea agregar otro producto al pedido? (s/n)")
+            #s.sendall(pregunta.encode())
+        
         if opcion == "4":
             break
 finally:
