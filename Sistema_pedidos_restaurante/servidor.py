@@ -32,7 +32,8 @@ def handle_client(client_socket):
             cantidad = client_socket.recv(1024).decode() # Recibir la cantidad
             observaciones = client_socket.recv(1024).decode() # Recibir las observaciones
             restaurante.tomar_pedido(nombre, producto, cantidad, observaciones)  # Tomar un pedido usando el método de Restaurante
-        
+            client_socket.sendall("Pedido tomado con éxito.".encode())
+
     #-------------Mostrar pedido---------------------------------------- #     
         elif opcion == "3":
             client_socket.sendall(restaurante.mostrar_pedidos().encode())
@@ -42,28 +43,32 @@ def handle_client(client_socket):
                 cantidad = client_socket.recv(1024).decode()
                 restaurante.tomar_pedido(nombre, producto, cantidad, observaciones)  # Tomar un pedido usando el método de Restaurante
                 client_socket.sendall(restaurante.mostrar_pedidos().encode())
-        
+
+    #-------------Modificar pedido---------------------------------------- #  
         elif opcion == "4":
-            respuesta = "Modificando pedido."
-            client_socket.sendall(respuesta.encode())
+            mensaje = f"{Fore.BLUE}Modificando pedido.{Style.RESET_ALL}"
+            client_socket.sendall(mensaje.encode())
             id_pedido = client_socket.recv(1024).decode()
-            producto = client_socket.recv(1024).decode()
-            cantidad = client_socket.recv(1024).decode()
-            observaciones = client_socket.recv(1024).decode()
-            client_socket.sendall(restaurante.modificar_pedido(id_pedido, producto, cantidad, observaciones).encode())
-            print("anda bien")
+            if not restaurante.pedido_existe(id_pedido):
+                client_socket.sendall("El pedido con el ID proporcionado no existe.".encode())
+            else:
+                client_socket.sendall("Pedido modificado con exito".encode())
+                producto = client_socket.recv(1024).decode()
+                cantidad = client_socket.recv(1024).decode()
+                observaciones = client_socket.recv(1024).decode()
+                client_socket.sendall(restaurante.modificar_pedido(id_pedido, producto, cantidad, observaciones).encode())
 
+        #-------------Eliminar pedido---------------------------------------- # 
         elif opcion == "5":
-            respuesta = "Eliminando pedido."
-            client_socket.sendall(respuesta.encode())
+            client_socket.sendall("Eliminando pedido.....".encode())
             id_pedido = client_socket.recv(1024).decode()
-            print(type(id_pedido))
-            client_socket.sendall(restaurante.eliminar_pedido(id_pedido).encode())
+            if not restaurante.pedido_existe(id_pedido):
+                client_socket.sendall("El pedido con el ID proporcionado no existe.".encode())
+            else:
+                restaurante.eliminar_pedido(id_pedido)
+                client_socket.sendall("Pedido eliminado con éxito.".encode())
 
-        else:
-            respuesta = "Opción no válida."
-            client_socket.sendall(respuesta.encode())
-        
+
 
 def server():
     HOST = 'localhost'

@@ -1,3 +1,4 @@
+from colorama import Fore, Style
 class Producto:
     def __init__(self, id, nombre, precio, categoria, descripcion):
         self.id = id
@@ -7,4 +8,4 @@ class Producto:
         self.descripcion = descripcion
 
     def __str__(self):
-        return f"{self.id}){self.nombre}: {self.descripcion} - ${self.precio:.2f}"
+        return f"({Fore.CYAN}{self.id}{Style.RESET_ALL}){self.nombre}: {self.descripcion} - ${self.precio:.2f}"

@@ -1,4 +1,5 @@
 from pedido import Pedido
+
 class Restaurante:
     def __init__(self, carta):
         self.carta = carta
@@ -14,6 +15,13 @@ class Restaurante:
             respuesta += str(pedido) + "\n"
         return respuesta
 
+    def pedido_existe(self, id_pedido):
+        id_pedido = int(id_pedido)
+        for pedido in self.pedidos:
+            if pedido.id == id_pedido:
+                return True
+        return False
+    
     def modificar_pedido(self, id_pedido, producto, cantidad, observaciones):
         id_pedido = int(id_pedido) #convierto la id del pedido a entero ya que del servidor viene en formato str
         for pedido in self.pedidos:
