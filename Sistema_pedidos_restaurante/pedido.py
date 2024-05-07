@@ -13,8 +13,9 @@ class Pedido:
         return f"""
         Pedido: {self.id}
         Nombre: {self.nombre}
-        Producto: {self.producto}
+        Producto: {self.producto.nombre}
         Cantidad: {self.cantidad}
         Observaciones: {self.observaciones}
         """
 
+   

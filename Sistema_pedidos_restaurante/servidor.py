@@ -28,35 +28,62 @@ def handle_client(client_socket):
             respuesta = "Tomando pedido."
             client_socket.sendall(respuesta.encode())
             nombre = client_socket.recv(1024).decode() # Recibir el nombre del cliente
-            producto = client_socket.recv(1024).decode() # Recibir el producto
-            cantidad = client_socket.recv(1024).decode() # Recibir la cantidad
+            producto_id = int(client_socket.recv(1024).decode()) # Recibir el ID del producto
+            cantidad = int(client_socket.recv(1024).decode()) # Recibir la cantidad
             observaciones = client_socket.recv(1024).decode() # Recibir las observaciones
-            restaurante.tomar_pedido(nombre, producto, cantidad, observaciones)  # Tomar un pedido usando el método de Restaurante
-            client_socket.sendall("Pedido tomado con éxito.".encode())
+            
+            # Buscar el objeto Producto correspondiente al ID recibido
+            producto = next((prod for prod in carta if prod.id == producto_id), None) #busca en la lista carta el primer objeto Producto cuyo id coincida con el valor de producto_id. Si lo encuentra, asigna ese objeto Producto a la variable producto. Si no lo encuentra, asigna None a producto.
+            
+            # Verificar si se encontró el producto
+            if producto is not None:
+                # Tomar un pedido usando el método de Restaurante
+                restaurante.tomar_pedido(nombre, producto, cantidad, observaciones)
+                client_socket.sendall("Pedido tomado con éxito.".encode())
+            else:
+                # Enviar un mensaje de error si el producto no se encuentra en la carta
+                client_socket.sendall("Error: Producto no encontrado en la carta.".encode())
+
 
     #-------------Mostrar pedido---------------------------------------- #     
         elif opcion == "3":
             client_socket.sendall(restaurante.mostrar_pedidos().encode())
             pregunta = client_socket.recv(1024).decode()
             if pregunta.lower() == 's':
-                producto = client_socket.recv(1024).decode()
-                cantidad = client_socket.recv(1024).decode()
-                restaurante.tomar_pedido(nombre, producto, cantidad, observaciones)  # Tomar un pedido usando el método de Restaurante
+                producto_id = int(client_socket.recv(1024).decode())
+                cantidad = int(client_socket.recv(1024).decode())
+                producto = next((prod for prod in carta if prod.id == producto_id), None)
+                if producto is not None:
+                    restaurante.tomar_pedido(nombre, producto, cantidad, observaciones)  # Tomar un pedido usando el método de Restaurante
+                else:
+                    client_socket.sendall("Error: Producto no encontrado en la carta.".encode())
                 client_socket.sendall(restaurante.mostrar_pedidos().encode())
 
     #-------------Modificar pedido---------------------------------------- #  
         elif opcion == "4":
             mensaje = f"{Fore.BLUE}Modificando pedido.{Style.RESET_ALL}"
             client_socket.sendall(mensaje.encode())
-            id_pedido = client_socket.recv(1024).decode()
+            id_pedido = int(client_socket.recv(1024).decode())
             if not restaurante.pedido_existe(id_pedido):
                 client_socket.sendall("El pedido con el ID proporcionado no existe.".encode())
             else:
-                client_socket.sendall("Pedido modificado con exito".encode())
-                producto = client_socket.recv(1024).decode()
-                cantidad = client_socket.recv(1024).decode()
+                client_socket.sendall("Pedido modificado con éxito.".encode())
+                
+                # Recibir el nuevo producto, cantidad y observaciones del cliente
+                producto_id = int(client_socket.recv(1024).decode())
+                cantidad = int(client_socket.recv(1024).decode())
                 observaciones = client_socket.recv(1024).decode()
-                client_socket.sendall(restaurante.modificar_pedido(id_pedido, producto, cantidad, observaciones).encode())
+                
+                # Buscar el objeto Producto correspondiente al producto_id
+                producto = next((prod for prod in carta if prod.id == producto_id), None)
+                
+                if producto is not None:
+                    # Si se encuentra el producto, modificar el pedido
+                    client_socket.sendall(restaurante.modificar_pedido(id_pedido, producto, cantidad, observaciones).encode())
+                else:
+                    # Si no se encuentra el producto, enviar un mensaje de error al cliente
+                    client_socket.sendall("Error: Producto no encontrado en la carta.".encode())
+
 
         #-------------Eliminar pedido---------------------------------------- # 
         elif opcion == "5":
