@@ -1,6 +1,6 @@
 class Pedido:
     id = 0
-
+    #traigo el objeto producto
     def __init__(self, nombre, producto, cantidad, observaciones):
         self.id = Pedido.id
         self.nombre = nombre
@@ -14,8 +14,12 @@ class Pedido:
         Pedido: {self.id}
         Nombre: {self.nombre}
         Producto: {self.producto.nombre}
+        Precio: {self.producto.precio}$
         Cantidad: {self.cantidad}
         Observaciones: {self.observaciones}
+        -------------------------
+        Subtotal: {self.calcular_subtotal():.2f}$ 
         """
 
-   
+    def calcular_subtotal(self):
+        return self.producto.precio * self.cantidad

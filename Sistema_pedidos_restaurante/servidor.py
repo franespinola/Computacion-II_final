@@ -58,6 +58,7 @@ def handle_client(client_socket):
                 else:
                     client_socket.sendall("Error: Producto no encontrado en la carta.".encode())
                 client_socket.sendall(restaurante.mostrar_pedidos().encode())
+  
 
     #-------------Modificar pedido---------------------------------------- #  
         elif opcion == "4":
