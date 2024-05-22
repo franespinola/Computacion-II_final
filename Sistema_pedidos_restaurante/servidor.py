@@ -25,7 +25,7 @@ def handle_client(client_socket):
 
     #-------------Tomar pedido---------------------------------------- # 
         elif opcion == "2":
-            respuesta = "Tomando pedido."
+            respuesta = "Tomando pedido..."
             client_socket.sendall(respuesta.encode())
             nombre = client_socket.recv(1024).decode() # Recibir el nombre del cliente
             producto_id = int(client_socket.recv(1024).decode()) # Recibir el ID del producto
