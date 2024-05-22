@@ -44,6 +44,8 @@ try:
                 s.sendall(str(producto).encode())
                 cantidad = int(input("Ingrese la cantidad: "))
                 s.sendall(str(cantidad).encode())
+                observaciones = input("Ingrese las observaciones: ")
+                s.sendall(str(observaciones).encode())
                 respuesta=s.recv(1024).decode()
                 print(respuesta)
 
