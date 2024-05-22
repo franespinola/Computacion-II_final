@@ -8,7 +8,6 @@ from colorama import Fore, Style
 def handle_client(client_socket):
     restaurante = Restaurante(carta) 
     while True:
-
         opcion = client_socket.recv(1024).decode()  #hago la decodificacion de los datos con decode. Recordando que vienen en bytes
         print("Opción recibida:", opcion)
 
@@ -44,7 +43,6 @@ def handle_client(client_socket):
                 # Enviar un mensaje de error si el producto no se encuentra en la carta
                 client_socket.sendall("Error: Producto no encontrado en la carta.".encode())
 
-
     #-------------Mostrar pedido---------------------------------------- #     
         elif opcion == "3":
             client_socket.sendall(restaurante.mostrar_pedidos().encode())
@@ -62,7 +60,6 @@ def handle_client(client_socket):
                     client_socket.sendall("Error: Producto no encontrado en la carta.".encode())
                 client_socket.sendall(restaurante.mostrar_pedidos().encode())
   
-
     #-------------Modificar pedido---------------------------------------- #  
         elif opcion == "4":
             mensaje = f"{Fore.BLUE}Modificando pedido.{Style.RESET_ALL}"
@@ -88,18 +85,16 @@ def handle_client(client_socket):
                     # Si no se encuentra el producto, enviar un mensaje de error al cliente
                     client_socket.sendall("Error: Producto no encontrado en la carta.".encode())
 
-
         #-------------Eliminar pedido---------------------------------------- # 
         elif opcion == "5":
-            client_socket.sendall("Eliminando pedido.....".encode())
+            mensaje = f"{Fore.RED}Eliminando pedido.....{Style.RESET_ALL}"
+            client_socket.sendall(mensaje.encode())
             id_pedido = client_socket.recv(1024).decode()
             if not restaurante.pedido_existe(id_pedido):
                 client_socket.sendall("El pedido con el ID proporcionado no existe.".encode())
             else:
                 restaurante.eliminar_pedido(id_pedido)
                 client_socket.sendall("Pedido eliminado con éxito.".encode())
-
-
 
 def server():
     HOST = 'localhost'

@@ -74,7 +74,6 @@ try:
             respuesta = s.recv(1024).decode()
             print(respuesta)
 
-
         elif opcion == "6":
             break
 finally:
