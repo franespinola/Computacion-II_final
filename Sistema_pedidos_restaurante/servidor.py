@@ -24,7 +24,7 @@ def handle_client(client_socket):
 
     #-------------Tomar pedido---------------------------------------- # 
         elif opcion == "2":
-            respuesta = "Tomando pedido..."
+            respuesta = f"{Fore.GREEN}Tomando pedido...{Style.RESET_ALL}"
             client_socket.sendall(respuesta.encode())
             nombre = client_socket.recv(1024).decode() # Recibir el nombre del cliente
             producto_id = int(client_socket.recv(1024).decode()) # Recibir el ID del producto
@@ -62,7 +62,7 @@ def handle_client(client_socket):
   
     #-------------Modificar pedido---------------------------------------- #  
         elif opcion == "4":
-            mensaje = f"{Fore.BLUE}Modificando pedido.{Style.RESET_ALL}"
+            mensaje = f"{Fore.YELLOW}Modificando pedido.{Style.RESET_ALL}"
             client_socket.sendall(mensaje.encode())
             id_pedido = int(client_socket.recv(1024).decode())
             if not restaurante.pedido_existe(id_pedido):
