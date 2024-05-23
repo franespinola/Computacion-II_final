@@ -14,7 +14,7 @@ try:
         print("3. Mostrar pedidos")
         print("4. Modificar pedido")
         print("5. Eliminar pedido")
-        print("6. Salir")
+        print("6. Enviar Pedido")
 
         opcion = input("Ingrese opción: ")
         if opcion not in ["1", "2", "3", "4", "5", "6"]:
@@ -75,7 +75,22 @@ try:
             print(respuesta)
 
         elif opcion == "6":
-            break
+            if respuesta == "No hay pedidos.":
+                continue
+            else:
+                pregunta = input("¿Desea enviar el pedido? (s/n)")
+                s.sendall(pregunta.encode())
+                if pregunta.lower() == 's':
+                    respuesta = s.recv(1024).decode()
+                    print(respuesta)
+                    respuesta = s.recv(1024).decode()
+                    print(respuesta)
+                    respuesta = s.recv(1024).decode()
+                    print(respuesta)
+                    break
+                
+                
+               
 finally:
     s.close()
     print("Conexión cerrada.")

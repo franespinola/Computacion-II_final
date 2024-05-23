@@ -62,7 +62,7 @@ def handle_client(client_socket):
   
     #-------------Modificar pedido---------------------------------------- #  
         elif opcion == "4":
-            mensaje = f"{Fore.YELLOW}Modificando pedido.{Style.RESET_ALL}"
+            mensaje = f"{Fore.YELLOW}Modificando pedido...{Style.RESET_ALL}"
             client_socket.sendall(mensaje.encode())
             id_pedido = int(client_socket.recv(1024).decode())
             if not restaurante.pedido_existe(id_pedido):
@@ -95,6 +95,19 @@ def handle_client(client_socket):
             else:
                 restaurante.eliminar_pedido(id_pedido)
                 client_socket.sendall("Pedido eliminado con éxito.".encode())
+        
+        #-------------Enviar pedido a cocina y salir(resetear pedidos)--------------------------------------- # 
+        elif opcion == "6":
+            #mensaje = f"{Fore.BLUE}Enviando pedido.....{Style.RESET_ALL}"
+            client_socket.sendall(restaurante.mostrar_pedidos().encode())
+            #client_socket.sendall(mensaje.encode())
+            if restaurante.mostrar_pedidos() == "No hay pedidos.":
+                continue
+            pregunta = client_socket.recv(1024).decode()
+            if pregunta.lower() == 's':
+                client_socket.sendall(restaurante.mostrar_pedidos().encode()) 
+                client_socket.sendall(f"Total a pagar: ${restaurante.calcular_total_pedidos():.2f}\n".encode())
+                client_socket.sendall("Pedido enviado a cocina. Espere a ser llamado".encode())    
 
 def server():
     HOST = 'localhost'
