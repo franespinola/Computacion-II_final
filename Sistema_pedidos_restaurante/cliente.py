@@ -85,12 +85,8 @@ try:
                     print(respuesta)
                     respuesta = s.recv(1024).decode()
                     print(respuesta)
-                    respuesta = s.recv(1024).decode()
-                    print(respuesta)
                     break
-                
-                
-               
+                     
 finally:
     s.close()
     print("Conexión cerrada.")

@@ -15,7 +15,7 @@ class Restaurante:
             return "No hay pedidos."
         for pedido in self.pedidos:
             respuesta += str(pedido) + "\n"
-        respuesta += f"Total de pedidos: ${self.calcular_total_pedidos():.2f}\n"
+        respuesta += f"Total pedidos: ${self.calcular_total_pedidos():.2f}\n"
         return respuesta
 
     def pedido_existe(self, id_pedido):
