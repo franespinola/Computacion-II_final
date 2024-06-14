@@ -11,10 +11,11 @@ logging.basicConfig(filename='servidor.log', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s') 
 
 def handle_client(client_socket):
-    restaurante = Restaurante(carta) 
+    restaurante = Restaurante(carta)
+    print(f"Conexión establecida con el cliente {client_socket.getpeername()}")
     while True:
         opcion = client_socket.recv(1024).decode()  #hago la decodificacion de los datos con decode. Recordando que vienen en bytes
-        print("Opción recibida:", opcion)
+        print(f"Opción recibida:{opcion} , Cliente: {client_socket.getpeername()}")
 
     #-------------Mostrar carta---------------------------------------- #   
         if opcion == "1":
@@ -126,7 +127,7 @@ def server():
 
     while True:
         conn, addr = s.accept()
-        client_thread = threading.Thread(target=handle_client, args=(conn,))
+        client_thread = threading.Thread(target=handle_client, args=(conn,)) #conn es el client socket que se pasa como parametro a la funcion handle_client
         client_thread.start()
 server()
 
