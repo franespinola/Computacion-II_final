@@ -120,7 +120,10 @@ def handle_client(client_socket):
                 continue
             pregunta = client_socket.recv(1024).decode()
             if pregunta.lower() == 's':
-                logging.info(f"Cliente {client_socket.getpeername()} - Pedido enviado a cocina")
+                logging.info(f"Cliente {client_socket.getpeername()} - Pedido enviado a cocina")  
+                client_socket.sendall("Pedido enviado a cocina. Espere a ser llamado.".encode())    
+                print(f"Cliente {client_socket.getpeername()} - Pedido enviado a cocina: {restaurante.mostrar_pedidos()}")
+
 
 def server():
     HOST = 'localhost'
