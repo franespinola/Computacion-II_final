@@ -70,6 +70,9 @@ def handle_client(client_socket):
   
     #-------------Modificar pedido---------------------------------------- #  
         elif opcion == "4":
+            if restaurante.mostrar_pedidos() == "No hay pedidos.":
+                client_socket.sendall("No hay pedidos.".encode())
+                continue
             mensaje = f"{Fore.YELLOW}Modificando pedido...{Style.RESET_ALL}"
             client_socket.sendall(mensaje.encode())
             id_pedido = int(client_socket.recv(1024).decode())
@@ -95,6 +98,9 @@ def handle_client(client_socket):
 
         #-------------Eliminar pedido---------------------------------------- # 
         elif opcion == "5":
+            if restaurante.mostrar_pedidos() == "No hay pedidos.":
+                client_socket.sendall("No hay pedidos.".encode())
+                continue
             mensaje = f"{Fore.RED}Eliminando pedido.....{Style.RESET_ALL}"
             client_socket.sendall(mensaje.encode())
             id_pedido = client_socket.recv(1024).decode()
