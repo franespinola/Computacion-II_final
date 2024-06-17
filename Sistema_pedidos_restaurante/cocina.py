@@ -1,25 +1,32 @@
 import socket
 
-HOST = 'localhost'
-PORT = 50007
-    
-try:
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_address = (HOST, PORT)
-    s.connect(server_address)
+def iniciar_cocina():
+    cocina_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    cocina_socket.bind(('localhost', 54321))
+    cocina_socket.listen(5)
+    print("Cocina esperando pedidos del servidor...")
 
-     # Enviar datos al servidor
-    message = "¡Conexión exitosa desde la cocina!"
-    s.sendall(message.encode())
+    while True:
+        servidor_socket, servidor_direccion = cocina_socket.accept()
+        print(f"Conexión establecida con el servidor: {servidor_direccion}")
 
-    # Esperar la respuesta del servidor
-    data = s.recv(1024)
-    print("Respuesta del servidor:", data.decode())
+        # Recibir pedido del servidor (incluyendo la información del cliente)
+        pedido_completo = servidor_socket.recv(1024).decode('utf-8')
+        pedido, cliente_addr = pedido_completo.split('|')
 
-except Exception as e:
-    print("Error al conectar al servidor:", str(e))
+        print(f"Pedido recibido del servidor: {pedido}")
+        print(f"Para el cliente: {cliente_addr}")
 
-finally:
-    # Cerrar la conexión
-    s.close()
+        # ... (lógica para procesar el pedido) ...
 
+        # Simular que el cocinero preparó el pedido
+        input("Presiona Enter cuando el pedido esté listo...")
+        mensaje_listo = f"El pedido {pedido} está listo. ¡Buen provecho!"
+
+        # Enviar la confirmación al servidor (incluyendo la información del cliente)
+        servidor_socket.sendall(mensaje_listo.encode('utf-8'))
+        
+        servidor_socket.close()
+
+if __name__ == "__main__":
+    iniciar_cocina()

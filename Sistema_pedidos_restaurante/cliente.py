@@ -37,7 +37,7 @@ try:
             print(respuesta)
             
         elif opcion == "3":
-            if respuesta == "No hay pedidos.":  # Si no hay pedidos, no se puede agregar otro producto
+            if respuesta == "No hay pedidos.": 
                 continue
             else:
                 pregunta = input("¿Desea agregar otro producto al pedido? (s/n)")
@@ -89,6 +89,7 @@ try:
                 if pregunta.lower() == 's':
                     respuesta = s.recv(1024).decode()
                     print(respuesta)
+                    # Esperar el mensaje del servidor indicando que el pedido está listo
                     respuesta = s.recv(1024).decode()
                     print(respuesta)
                     break
