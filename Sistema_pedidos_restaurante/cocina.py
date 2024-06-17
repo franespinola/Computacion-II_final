@@ -2,7 +2,7 @@ import socket
 
 HOST = 'localhost'
 PORT = 50007
-    
+print("Conectando al servidor...")
 try:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_address = (HOST, PORT)
