@@ -53,9 +53,12 @@ try:
                     print(respuesta)
 
         elif opcion == "4":
-            id_pedido = int(input("Ingrese el ID del pedido a modificar: "))
-            s.sendall(str(id_pedido).encode())
-            respuesta = s.recv(1024).decode()
+            if respuesta == "No hay pedidos.":
+                continue
+            else: 
+                id_pedido = int(input("Ingrese el ID del pedido a modificar: "))
+                s.sendall(str(id_pedido).encode())
+                respuesta = s.recv(1024).decode()
             if respuesta == "El pedido con el ID proporcionado no existe.":
                 print(respuesta)
             else:
@@ -69,10 +72,13 @@ try:
                 print(respuesta)
 
         elif opcion == "5":
-            id_pedido = int(input("Ingrese el ID del pedido a eliminar: "))
-            s.sendall(str(id_pedido).encode())
-            respuesta = s.recv(1024).decode()
-            print(respuesta)
+            if respuesta == "No hay pedidos.":
+                continue
+            else:
+                id_pedido = int(input("Ingrese el ID del pedido a eliminar: "))
+                s.sendall(str(id_pedido).encode())
+                respuesta = s.recv(1024).decode()
+                print(respuesta)
 
         elif opcion == "6":
             if respuesta == "No hay pedidos.":
