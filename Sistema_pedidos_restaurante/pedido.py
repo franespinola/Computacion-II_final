@@ -1,5 +1,5 @@
 class Pedido:
-    id = 0
+    id = 1
     #traigo el objeto producto
     def __init__(self, nombre, producto, cantidad, observaciones):
         self.id = Pedido.id

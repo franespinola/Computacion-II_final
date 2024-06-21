@@ -1,32 +1,30 @@
 import socket
+import threading
 
-def iniciar_cocina():
-    cocina_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    cocina_socket.bind(('localhost', 54321))
-    cocina_socket.listen(5)
-    print("Cocina esperando pedidos del servidor...")
+def handle_kitchen(client_socket):
+    pedidos = []    
+    while True:
+        pedido = client_socket.recv(1024).decode()
+        pedidos.append(pedido)
+        if not pedido:
+            break
+        for i in range(len(pedidos)):
+            print("Pedidos para preparar:")
+            print(f"{pedidos[i]}")   
+    client_socket.close()
+
+def cocina():
+    HOST = 'localhost'
+    PORT = 50008
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((HOST, PORT))
+    s.listen(5)
+    print("Cocina lista y esperando pedidos...")
 
     while True:
-        servidor_socket, servidor_direccion = cocina_socket.accept()
-        print(f"Conexión establecida con el servidor: {servidor_direccion}")
-
-        # Recibir pedido del servidor (incluyendo la información del cliente)
-        pedido_completo = servidor_socket.recv(1024).decode('utf-8')
-        pedido, cliente_addr = pedido_completo.split('|')
-
-        print(f"Pedido recibido del servidor: {pedido}")
-        print(f"Para el cliente: {cliente_addr}")
-
-        # ... (lógica para procesar el pedido) ...
-
-        # Simular que el cocinero preparó el pedido
-        input("Presiona Enter cuando el pedido esté listo...")
-        mensaje_listo = f"El pedido {pedido} está listo. ¡Buen provecho!"
-
-        # Enviar la confirmación al servidor (incluyendo la información del cliente)
-        servidor_socket.sendall(mensaje_listo.encode('utf-8'))
-        
-        servidor_socket.close()
+        conn, addr = s.accept()
+        kitchen_thread = threading.Thread(target=handle_kitchen, args=(conn,))
+        kitchen_thread.start()
 
 if __name__ == "__main__":
-    iniciar_cocina()
+    cocina()
