@@ -2,8 +2,8 @@ import socket
 from colorama import Fore, Style
 
 # Define las direcciones para IPv4 e IPv6
-ipv4_host = '192.168.1.42'
-ipv6_host = 'fda8:4ac5:c10a:1a8f:f299:931d:e6be:9dd5'
+ipv4_host = '192.168.1.46' #'192.168.1.46'
+ipv6_host = 'fe80::ef98:3ae4:5f95:b29f%12' #'fda8:4ac5:c10a:1a8f:f299:931d:e6be:9dd5'
 PORT = 50007
 
 s = None  # Inicializar la variable del socket

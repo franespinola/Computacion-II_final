@@ -5,7 +5,7 @@ from restaurante import Restaurante
 from collections import defaultdict
 from colorama import Fore, Style
 import logging
-import select
+
 
 # Configuración del logging
 logging.basicConfig(filename='servidor.log', level=logging.INFO,
@@ -219,29 +219,41 @@ def enviar_pedido_a_cocina(pedido, direccion_cliente):
     cocina_socket.sendall(f"{pedido},{direccion_cliente}".encode())
     cocina_socket.close()
 
+def aceptar_conexiones(server_socket):
+    """Función para aceptar conexiones en un socket de servidor en un hilo separado."""
+    while True:
+        conn, addr = server_socket.accept()
+        direccion_cliente_formateada = f"{addr[0]}:{addr[1]}"
+        imprimir_mensaje(f"Conexión aceptada desde {direccion_cliente_formateada}", 'SUCCESS')
+        client_thread = threading.Thread(target=handle_client, args=(conn,))
+        client_thread.start()
+
 def server():
     """Inicia el servidor."""
     PORT = 50007
     server_sockets = []
 
-    # Direcciones específicas para escuchar
-    direcciones = [
-        ('192.168.1.42', PORT, socket.AF_INET),
-        ('fda8:4ac5:c10a:1a8f:f299:931d:e6be:9dd5', PORT, socket.AF_INET6)
-    ]
+    # Obtener información de todas las interfaces disponibles (IPv4 e IPv6)
+    try:
+        direcciones = socket.getaddrinfo(None, PORT, socket.AF_UNSPEC, socket.SOCK_STREAM, 0, socket.AI_PASSIVE)
+    except socket.gaierror as e:
+        imprimir_mensaje(f"Error al obtener información de interfaces: {e}", 'ERROR')
+        logging.error(f"Error al obtener información de interfaces: {e}")
+        return
 
-    # Intentar crear y vincular sockets para las direcciones específicas
-    for direccion, puerto, familia in direcciones:
+    # Crear y vincular sockets para todas las direcciones obtenidas
+    for direccion in direcciones:
+        familia, tipo, proto, canonico, sockaddr = direccion
         try:
-            server_socket = socket.socket(familia, socket.SOCK_STREAM)
+            server_socket = socket.socket(familia, tipo, proto)
             server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            imprimir_mensaje(f"Servidor escuchando en {direccion}:{puerto}", 'SUCCESS')
-            server_socket.bind((direccion, puerto))
+            imprimir_mensaje(f"Servidor escuchando en {sockaddr[0]}:{sockaddr[1]}", 'SUCCESS')
+            server_socket.bind(sockaddr)
             server_socket.listen(5)
             server_sockets.append(server_socket)
         except OSError as e:
-            imprimir_mensaje(f"Error al crear o vincular socket en {direccion}:{puerto} - {e}", 'ERROR')
-            logging.error(f"Error al crear o vincular socket en {direccion}:{puerto} - {e}")
+            imprimir_mensaje(f"Error al crear o vincular socket en {sockaddr[0]}:{sockaddr[1]} - {e}", 'ERROR')
+            logging.error(f"Error al crear o vincular socket en {sockaddr[0]}:{sockaddr[1]} - {e}")
 
     if not server_sockets:
         imprimir_mensaje("No se pudo crear ningún socket para las direcciones especificadas", 'ERROR')
@@ -250,12 +262,9 @@ def server():
     # Iniciar el hilo para escuchar las confirmaciones de la cocina
     threading.Thread(target=escuchar_confirmaciones_cocina, daemon=True).start()
 
-    while True:
-        readable, _, _ = select.select(server_sockets, [], [])
-        for s in readable:
-            conn, addr = s.accept()
-            direccion_cliente_formateada = f"{addr[0]}:{addr[1]}"
-            imprimir_mensaje(f"Conexión aceptada desde {direccion_cliente_formateada}", 'SUCCESS')
-            client_thread = threading.Thread(target=handle_client, args=(conn,))
-            client_thread.start()
+    # Crear e iniciar un hilo para aceptar conexiones en cada socket del servidor
+    for server_socket in server_sockets:
+        server_thread = threading.Thread(target=aceptar_conexiones, args=(server_socket,))
+        server_thread.start()
+
 server()
