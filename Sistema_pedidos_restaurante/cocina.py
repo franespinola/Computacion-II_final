@@ -1,16 +1,10 @@
 import threading
 from colorama import Fore, Style
 from servidor import pedidos_queue, clientes_sockets, imprimir_mensaje
-# Podrías importar logging si lo necesitas
 
 pedidos_en_cocina = []  # lista local donde almacenamos pedidos
 
-def cocina_interna():
-    """
-    Hilo que consume pedidos desde pedidos_queue con get().
-    Cada pedido que extrae, lo guarda en pedidos_en_cocina
-    para poder marcarlo manualmente.
-    """
+def cocina_interna(): #Hilo que consume pedidos desde pedidos_queue con get().Cada pedido que extrae, lo guarda en pedidos_en_cocina para poder marcarlo manualmente.
     while True:
         pedido = pedidos_queue.get()  # bloquea hasta que haya un pedido
         if pedido is None:
@@ -80,13 +74,8 @@ def manage_pedidos_local():
         else:
             print("Opción no válida.")
 
-def iniciar_cocina():
-    """
-    Inicia el hilo que consume pedidos de la cola (cocina_interna)
-    y lanza el menú local manage_pedidos_local().
-    """
+def iniciar_cocina(): #Inicia el hilo que consume pedidos de la cola (cocina_interna) y lanza el menú local manage_pedidos_local().
     hilo_cocina = threading.Thread(target=cocina_interna, daemon=True)
     hilo_cocina.start()
-
     # El menú se ejecuta en el hilo principal
     manage_pedidos_local()

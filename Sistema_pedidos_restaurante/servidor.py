@@ -25,7 +25,7 @@ def imprimir_mensaje(mensaje, tipo='INFO'):
 clientes_sockets = {}
 
 # Cola de pedidos compartida con la cocina
-pedidos_queue = queue.Queue()
+pedidos_queue = queue.Queue() #comunicacion entre hilos(todo dentro de un proceso), si quiero comunicar procesos utilizo multiprocessing.Queue
 
 def handle_client(client_socket):
     """Maneja la comunicación con un cliente (un hilo por cliente)."""
@@ -165,7 +165,6 @@ def aceptar_conexiones(server_socket):
 def server():
     PORT = 50007
     server_sockets = []
-
     direcciones = socket.getaddrinfo(None, PORT, socket.AF_UNSPEC,
                                      socket.SOCK_STREAM, 0, socket.AI_PASSIVE)
     for familia, tipo, proto, _, sockaddr in direcciones:
@@ -178,7 +177,6 @@ def server():
             server_sockets.append(s)
         except OSError as e:
             imprimir_mensaje(f"Error al crear socket en {sockaddr}: {e}", 'ERROR')
-
     # Iniciar un hilo por cada socket
     for sock in server_sockets:
         hilo = threading.Thread(target=aceptar_conexiones, args=(sock,), daemon=True)
