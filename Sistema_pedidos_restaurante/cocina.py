@@ -26,7 +26,7 @@ def print_pedidos_en_cola_local():
     for i, pedido in enumerate(pedidos_en_cocina, start=1):
         print(f"{i}. {pedido}")
 
-def marcar_pedido_finalizado():
+def marcar_pedido_finalizado(pipe_notificador=None):
     if not pedidos_en_cocina:
         print("No hay pedidos en la cocina.")
         return
@@ -56,26 +56,30 @@ def marcar_pedido_finalizado():
             print(f"Error al notificar al cliente {direccion_cliente}: {e}")
     else:
         print(f"No se encontró cliente para {direccion_cliente} (posiblemente se desconectó).")
+    
+    # --- Enviar info al proceso notificador ---
+    if pipe_notificador:
+        pipe_notificador.send(f"Pedido finalizado -> {pedido_finalizado}")
 
-def manage_pedidos_local():
-    """
-    Menú interactivo para la cocina (bloquea el hilo principal o de donde se lo llame).
-    """
+def manage_pedidos_local(pipe_notificador=None): #menu para la cocina
     while True:
         mostrar_menu_cocina()
         opcion = input("Seleccione una opción: ").strip()
         if opcion == "1":
             print_pedidos_en_cola_local()
         elif opcion == "2":
-            marcar_pedido_finalizado()
+            # Aquí pasamos el pipe
+            marcar_pedido_finalizado(pipe_notificador)
         elif opcion == "3":
             print("Saliendo del menú de cocina...")
             break
         else:
             print("Opción no válida.")
 
-def iniciar_cocina(): #Inicia el hilo que consume pedidos de la cola (cocina_interna) y lanza el menú local manage_pedidos_local().
+
+def iniciar_cocina(pipe_notificador=None):
     hilo_cocina = threading.Thread(target=cocina_interna, daemon=True)
     hilo_cocina.start()
     # El menú se ejecuta en el hilo principal
-    manage_pedidos_local()
+    manage_pedidos_local(pipe_notificador)
+
