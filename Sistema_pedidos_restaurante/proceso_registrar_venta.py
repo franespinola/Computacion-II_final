@@ -1,13 +1,13 @@
-def proceso_registrar_venta(conn_notificador):
+def proceso_registrar_venta(child_conn):
     """
-    Este proceso se bloquea esperando un mensaje de la cocina (conn_notificador).
+    Este proceso se bloquea esperando un mensaje de la cocina (child_conn).
     Cuando recibe un pedido finalizado, lo escribe en un archivo de ventas.
     Si recibe 'FIN', se cierra.
     """
     ventas_filename = "ventas_del_dia.txt"
     
     while True:
-        mensaje = conn_notificador.recv()  # Bloqueante
+        mensaje = child_conn.recv()  # Bloqueante
         if mensaje == "FIN":
             print("[Notificador] Recibido FIN, cerrando notificador...")
             break
@@ -20,5 +20,5 @@ def proceso_registrar_venta(conn_notificador):
             f.write(mensaje + "\n")
 
     # Cierre de la conexión (opcional para limpieza)
-    conn_notificador.close()
+    child_conn.close()
     print("[Notificador] Notificador cerrado.")

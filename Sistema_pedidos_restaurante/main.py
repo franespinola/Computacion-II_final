@@ -12,7 +12,7 @@ def main():
 
     server() # 1. Iniciar el servidor 
 
-    iniciar_cocina(pipe_notificador=parent_conn) #Inicio la cocina y le paso la conexion al notificador
+    iniciar_cocina(parent_conn) #Inicio la cocina y le paso la conexion al notificador
 
     # 3. Cuando hayas terminado (o quieras cerrar), envía "FIN" 
     parent_conn.send("FIN")
