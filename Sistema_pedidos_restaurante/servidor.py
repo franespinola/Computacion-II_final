@@ -60,8 +60,8 @@ def handle_client(client_socket):
 
     client_socket.close()
     del clientes_sockets[cliente_id]
-    imprimir_mensaje(f"Conexión cerrada y recursos liberados para {cliente_id}", 'INFO')
-    logging.info(f"Conexión cerrada y recursos liberados para {cliente_id}")
+    imprimir_mensaje(f"Pedido listo y conexión cerrada para {cliente_id}", 'INFO')
+    logging.info(f"Pedido listo y conexión cerrada para {cliente_id}")
 
 def mostrar_carta(client_socket):
     productos_por_categoria = defaultdict(list)

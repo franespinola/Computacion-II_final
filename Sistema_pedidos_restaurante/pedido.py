@@ -1,3 +1,4 @@
+from datetime import datetime
 class Pedido:
     id = 1
     #traigo el objeto producto
@@ -7,6 +8,7 @@ class Pedido:
         self.producto = producto
         self.cantidad = cantidad
         self.observaciones = observaciones
+        self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Fecha y hora exacta
         Pedido.id += 1  #por cada instancia q se crea se incrementa el id
 
     def __str__(self):
@@ -17,6 +19,7 @@ class Pedido:
         Precio: {self.producto.precio}$
         Cantidad: {self.cantidad}
         Observaciones: {self.observaciones}
+        Fecha y Hora: {self.timestamp}
         -------------------------
         Subtotal: {self.calcular_subtotal():.2f}$ 
         """

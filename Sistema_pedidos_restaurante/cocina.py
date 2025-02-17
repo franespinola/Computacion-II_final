@@ -15,7 +15,7 @@ def cocina_interna(): #Hilo que consume pedidos desde pedidos_queue con get().Ca
 def mostrar_menu_cocina():
     print(f"\n{Fore.MAGENTA}Opciones de cocina:{Style.RESET_ALL}")
     print("1. Ver pedidos actuales")
-    print("2. Marcar pedido como finalizado manualmente")
+    print("2. Marcar pedido como finalizado")
     print("3. Salir del menú de cocina")
 
 def print_pedidos_en_cola_local():
@@ -39,7 +39,7 @@ def marcar_pedido_finalizado(parent_conn):
     if idx < 0 or idx >= len(pedidos_en_cocina):
         print("Índice fuera de rango.")
         return
-    pedido_finalizado = pedidos_en_cocina.pop(idx)
+    pedido_finalizado = pedidos_en_cocina.pop(idx) # guardo el pedido q elimino
     
     # Extraer la dirección del cliente para notificarlo
     partes = pedido_finalizado.rsplit(",", 1)
@@ -74,10 +74,8 @@ def manage_pedidos_local(parent_conn): #menu para la cocina
         else:
             print("Opción no válida.")
 
-
 def iniciar_cocina(parent_conn):
     hilo_cocina = threading.Thread(target=cocina_interna, daemon=True)
     hilo_cocina.start()
-    # El menú se ejecuta en el hilo principal
-    manage_pedidos_local(parent_conn)
+    manage_pedidos_local(parent_conn)# El menú se ejecuta en el hilo principal
 

@@ -14,9 +14,6 @@ def main():
 
     iniciar_cocina(parent_conn) #Inicio la cocina y le paso la conexion al notificador
 
-    # 3. Cuando hayas terminado (o quieras cerrar), envía "FIN" 
-    parent_conn.send("FIN")
-
     # Esperar a que el proceso notificador termine
     notificador_process.join()
 
