@@ -2,11 +2,11 @@ import threading
 from colorama import Fore, Style
 from servidor import pedidos_queue, clientes_sockets, imprimir_mensaje
 
-pedidos_en_cocina = []  # lista local donde almacenamos pedidos
+pedidos_en_cocina = [] 
 
-def cocina_interna(): #Hilo que consume pedidos desde pedidos_queue con get().Cada pedido que extrae, lo guarda en pedidos_en_cocina para poder marcarlo manualmente.
+def cocina_interna():
     while True:
-        pedido = pedidos_queue.get()  # bloquea hasta que haya un pedido
+        pedido = pedidos_queue.get()
         if pedido is None:
             break  
         pedidos_en_cocina.append(pedido)
@@ -57,7 +57,7 @@ def marcar_pedido_finalizado(parent_conn):
     else:
         print(f"No se encontró cliente para {direccion_cliente} (posiblemente se desconectó).")
     
-    parent_conn.send(f"Pedido finalizado -> {pedido_finalizado}") # --- Enviar info al proceso notificador ---
+    parent_conn.send(f"Pedido finalizado -> {pedido_finalizado}") # envio el pedido al proceso notificador ---
 
 def manage_pedidos_local(parent_conn): #menu para la cocina
     while True:
@@ -66,8 +66,7 @@ def manage_pedidos_local(parent_conn): #menu para la cocina
         if opcion == "1":
             print_pedidos_en_cola_local()
         elif opcion == "2":
-            # Aquí pasamos el pipe
-            marcar_pedido_finalizado(parent_conn)
+            marcar_pedido_finalizado(parent_conn) # le paso el pipe
         elif opcion == "3":
             print("Saliendo del menú de cocina...")
             break

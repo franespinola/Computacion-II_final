@@ -150,8 +150,7 @@ def enviar_pedido_a_cocina_y_salir(client_socket, restaurante):
     pregunta = client_socket.recv(1024).decode()
     if pregunta.lower() == 's':
         direccion_cliente = f"{client_socket.getpeername()[0]}:{client_socket.getpeername()[1]}"
-        # Insertar en la cola
-        pedidos_queue.put(f"{restaurante.mostrar_pedidos()},{direccion_cliente}")
+        pedidos_queue.put(f"{restaurante.mostrar_pedidos()},{direccion_cliente}")# Insertar en la cola
         client_socket.sendall("Pedido enviado a cocina. Espere a ser llamado.".encode())
         restaurante.pedidos.clear()
 

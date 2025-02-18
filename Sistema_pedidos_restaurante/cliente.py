@@ -2,17 +2,15 @@ import socket
 from colorama import Fore, Style
 
 # Direcciones para IPv4 e IPv6
-ipv4_host = '169.254.22.147'
-ipv6_host = 'fe80::a51f:508b:c5b5:41a%13'
+ipv4_host = '192.168.1.35'
+ipv6_host = 'fe80::796:eed1:73a7:87ad%8'
 PORT = 50007
 
-s = None  # Inicializar el socket
+s = None
 
-# Obtener la información de la dirección para ambos tipos de direcciones
 ipv4_info = socket.getaddrinfo(ipv4_host, PORT, socket.AF_INET, socket.SOCK_STREAM)
 ipv6_info = socket.getaddrinfo(ipv6_host, PORT, socket.AF_INET6, socket.SOCK_STREAM)
 
-# Concatenar la información de ambas listas para iterar sobre ellas
 addrinfos = ipv4_info + ipv6_info
 
 for res in addrinfos:
