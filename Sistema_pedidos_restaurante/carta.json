@@ -1,0 +1,102 @@
+{
+    "productos": [
+        {
+            "id": 1,
+            "nombre": "Hamburguesa",
+            "precio": 12.5,
+            "categoria": "Plato principal",
+            "descripcion": "Carne, queso, tomate, lechuga."
+        },
+        {
+            "id": 2,
+            "nombre": "Papas fritas",
+            "precio": 3.5,
+            "categoria": "Guarnición",
+            "descripcion": "Papas fritas cortadas en juliana."
+        },
+        {
+            "id": 3,
+            "nombre": "Coca-Cola",
+            "precio": 2.5,
+            "categoria": "Bebida",
+            "descripcion": "Refresco de cola."
+        },
+        {
+            "id": 4,
+            "nombre": "Ensalada César",
+            "precio": 10.0,
+            "categoria": "Plato principal",
+            "descripcion": "Lechuga, pollo a la parrilla, queso parmesano, crutones, aderezo César."
+        },
+        {
+            "id": 5,
+            "nombre": "Nachos",
+            "precio": 6.5,
+            "categoria": "Guarnición",
+            "descripcion": "Nachos con queso derretido, jalapeños, guacamole y salsa."
+        },
+        {
+            "id": 6,
+            "nombre": "Agua mineral",
+            "precio": 1.5,
+            "categoria": "Bebida",
+            "descripcion": "Agua mineral natural."
+        },
+        {
+            "id": 7,
+            "nombre": "Tacos de pescado",
+            "precio": 15.0,
+            "categoria": "Plato principal",
+            "descripcion": "Tacos de pescado con repollo rallado, salsa cremosa y lima."
+        },
+        {
+            "id": 8,
+            "nombre": "Arroz blanco",
+            "precio": 3.0,
+            "categoria": "Guarnición",
+            "descripcion": "Arroz blanco cocido al vapor."
+        },
+        {
+            "id": 9,
+            "nombre": "Té helado",
+            "precio": 2.0,
+            "categoria": "Bebida",
+            "descripcion": "Té helado refrescante."
+        },
+        {
+            "id": 10,
+            "nombre": "Pizza Margarita",
+            "precio": 14.0,
+            "categoria": "Plato principal",
+            "descripcion": "Pizza con tomate, mozzarella y albahaca."
+        },
+        {
+            "id": 11,
+            "nombre": "Patatas bravas",
+            "precio": 4.5,
+            "categoria": "Guarnición",
+            "descripcion": "Patatas fritas con salsa brava picante."
+        },
+        {
+            "id": 12,
+            "nombre": "Cerveza",
+            "precio": 3.0,
+            "categoria": "Bebida",
+            "descripcion": "Cerveza rubia fría."
+        },
+        {
+            "id": 13,
+            "nombre": "banana",
+            "precio": 1.0,
+            "categoria": "Postre",
+            "descripcion": "banana con dulce"
+        },
+        {
+            "id": 14,
+            "nombre": "flan",
+            "precio": 3.0,
+            "categoria": "postre",
+            "descripcion": "flan con dulce de leche"
+        }
+    ]
+}

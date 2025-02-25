@@ -6,6 +6,7 @@ from colorama import Fore, Style
 from carta import carta
 from restaurante import Restaurante
 import queue
+import configparser
 
 # Configurar logging
 logging.basicConfig(filename='servidor.log', level=logging.INFO,
@@ -162,7 +163,12 @@ def aceptar_conexiones(server_socket):
         hilo_cliente.start()
 
 def server():
-    PORT = 50007
+    config = configparser.ConfigParser()  
+    config.read('configServidor.ini')
+    if 'SERVER' not in config or 'port' not in config['SERVER']:
+        print(f"{Fore.RED}Falta la configuración en server_config.ini (sección SERVER: port).{Style.RESET_ALL}")
+        exit(1)
+    PORT = int(config['SERVER']['port'])
     server_sockets = []
     direcciones = socket.getaddrinfo(None, PORT, socket.AF_UNSPEC,
                                      socket.SOCK_STREAM, 0, socket.AI_PASSIVE)
