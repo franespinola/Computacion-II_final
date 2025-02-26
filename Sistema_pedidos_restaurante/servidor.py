@@ -28,41 +28,57 @@ clientes_sockets = {}
 # Cola de pedidos compartida con la cocina
 pedidos_queue = queue.Queue() #comunicacion entre hilos(todo dentro de un proceso), si quiero comunicar procesos utilizo multiprocessing.Queue
 
-def handle_client(client_socket):
-    """Maneja la comunicación con un cliente (un hilo por cliente)."""
-    restaurante = Restaurante(carta)
-    direccion_cliente = client_socket.getpeername()
-    cliente_id = f"{direccion_cliente[0]}:{direccion_cliente[1]}"
-    clientes_sockets[cliente_id] = (client_socket, restaurante)
-    imprimir_mensaje(f"Conexión establecida con {cliente_id}", 'SUCCESS')
-    logging.info(f"Conexión establecida con {cliente_id}")
+def handle_client(client_socket): #maneja la comunicacion con un cliente (un hilo por cliente)
+    try:
+        restaurante = Restaurante(carta)
+        direccion_cliente = client_socket.getpeername()
+        cliente_id = f"{direccion_cliente[0]}:{direccion_cliente[1]}"
+        clientes_sockets[cliente_id] = (client_socket, restaurante)
+        imprimir_mensaje(f"Conexión establecida con {cliente_id}", 'SUCCESS')
+        logging.info(f"Conexión establecida con {cliente_id}")
 
-    while True:
-        opcion = client_socket.recv(1024).decode().strip()
-        if not opcion:
-            imprimir_mensaje(f"Conexión cerrada por {cliente_id}", 'INFO')
-            logging.info(f"Conexión cerrada por {cliente_id}")
-            break
+        pedido_enviado = False  # 🔹 Bandera para verificar si se envió un pedido
 
-        imprimir_mensaje(f"Opción {opcion} recibida de {cliente_id}", 'INFO')
+        while True:
+            try:
+                opcion = client_socket.recv(1024).decode().strip()
+                if not opcion:
+                    imprimir_mensaje(f"Conexión cerrada por {cliente_id}", 'INFO')
+                    logging.info(f"Conexión cerrada por {cliente_id}")
+                    break
 
-        if opcion == "1":
-            mostrar_carta(client_socket)
-        elif opcion == "2":
-            tomar_pedido(client_socket, restaurante)
-        elif opcion == "3":
-            mostrar_pedido(client_socket, restaurante)
-        elif opcion == "4":
-            modificar_pedido(client_socket, restaurante)
-        elif opcion == "5":
-            eliminar_pedido(client_socket, restaurante)
-        elif opcion == "6":
-            enviar_pedido_a_cocina_y_salir(client_socket, restaurante)
+                imprimir_mensaje(f"Opción {opcion} recibida de {cliente_id}", 'INFO')
 
-    client_socket.close()
-    del clientes_sockets[cliente_id]
-    imprimir_mensaje(f"Pedido listo y conexión cerrada para {cliente_id}", 'INFO')
-    logging.info(f"Pedido listo y conexión cerrada para {cliente_id}")
+                if opcion == "1":
+                    mostrar_carta(client_socket)
+                elif opcion == "2":
+                    tomar_pedido(client_socket, restaurante)
+                elif opcion == "3":
+                    mostrar_pedido(client_socket, restaurante)
+                elif opcion == "4":
+                    modificar_pedido(client_socket, restaurante)
+                elif opcion == "5":
+                    eliminar_pedido(client_socket, restaurante)
+                elif opcion == "6":
+                    pedido_enviado = enviar_pedido_a_cocina_y_salir(client_socket, restaurante) # Recibe True si se envió un pedido
+            except ConnectionResetError:
+                imprimir_mensaje(f"Cliente {cliente_id} cerró la ventana inesperadamente.", 'ERROR')
+                break
+            except OSError as e:
+                imprimir_mensaje(f"Error de conexión con {cliente_id}: {e}", 'ERROR')
+                break
+
+    except Exception as e:
+        imprimir_mensaje(f"Error inesperado con {cliente_id}: {e}", 'ERROR')
+
+    finally:
+        client_socket.close()
+        del clientes_sockets[cliente_id]
+        if pedido_enviado:
+            imprimir_mensaje(f"Pedido listo y conexión cerrada para {cliente_id}", 'INFO')
+            logging.info(f"Pedido listo y conexión cerrada para {cliente_id}")
+        else:
+            imprimir_mensaje(f"Conexión cerrada con {cliente_id} sin pedido.", 'INFO')
 
 def mostrar_carta(client_socket):
     productos_por_categoria = defaultdict(list)
@@ -145,8 +161,9 @@ def eliminar_pedido(client_socket, restaurante):
 def enviar_pedido_a_cocina_y_salir(client_socket, restaurante):
     pedidos = restaurante.mostrar_pedidos()
     client_socket.sendall(pedidos.encode())
+    
     if pedidos == "No hay pedidos.":
-        return
+        return False
 
     pregunta = client_socket.recv(1024).decode()
     if pregunta.lower() == 's':
@@ -154,6 +171,8 @@ def enviar_pedido_a_cocina_y_salir(client_socket, restaurante):
         pedidos_queue.put(f"{restaurante.mostrar_pedidos()},{direccion_cliente}")# Insertar en la cola
         client_socket.sendall("Pedido enviado a cocina. Espere a ser llamado.".encode())
         restaurante.pedidos.clear()
+        return True
+    return False
 
 def aceptar_conexiones(server_socket):
     while True:

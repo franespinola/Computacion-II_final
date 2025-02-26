@@ -83,9 +83,19 @@ else:
                 print(f"{Fore.RED}Opción no válida....{Style.RESET_ALL}")
                 continue
 
-            s.sendall(opcion.encode())
-            respuesta = s.recv(4096).decode()
-            print(respuesta)
+            try:
+                s.sendall(opcion.encode())
+                respuesta = s.recv(4096).decode()
+                if not respuesta:
+                    print(f"{Fore.RED}El servidor cerró la conexión.{Style.RESET_ALL}")
+                    break
+                print(respuesta)
+            except ConnectionResetError:
+                print(f"{Fore.RED}El servidor se ha cerrado. No se puede continuar.{Style.RESET_ALL}")
+                break
+            except BrokenPipeError:
+                print(f"{Fore.RED}Error: No se puede enviar datos, la conexión está cerrada.{Style.RESET_ALL}")
+                break
 
             if opcion == "2":
                 nombre = input(f"{Fore.YELLOW}Ingrese su nombre:{Style.RESET_ALL} ").strip()
@@ -153,7 +163,9 @@ else:
                     respuesta = s.recv(4096).decode()
                     print(respuesta)
                     break
-
+                
+    except KeyboardInterrupt:
+        print(f"\n{Fore.RED}Cliente cerrado por el usuario.{Style.RESET_ALL}")
     finally:
         s.close()
         print(f"{Fore.RED}Conexión cerrada.{Style.RESET_ALL}")
