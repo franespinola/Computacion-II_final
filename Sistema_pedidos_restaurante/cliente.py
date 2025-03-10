@@ -8,6 +8,7 @@ config.read('configCliente.ini')
 if 'CLIENTE' not in config or 'port' not in config['CLIENTE']:
     print(f"{Fore.RED}Falta la configuración en configCliente.ini (sección CLIENTE: port obligatorio).{Style.RESET_ALL}")
     exit(1)
+
 PORT = config['CLIENTE'].getint('port')
 
 ipv4_host = config['CLIENTE'].get('ipv4', '').strip()
@@ -60,112 +61,216 @@ for res in addrinfos:
 
 if s is None:
     print(f"{Fore.RED}No se pudo conectar al servidor{Style.RESET_ALL}")
-else:
-    try:
-        def solicitar_id(mensaje): 
-            while True:
-                entrada = input(f"{Fore.YELLOW}{mensaje}:{Style.RESET_ALL} ").strip()
-                if entrada.isdigit():
-                    return int(entrada)
-                else:
-                    print(f"{Fore.RED}Entrada inválida. Ingrese un número entero.{Style.RESET_ALL}")
-        while True:
-            print(f"\n{Fore.CYAN}Opciones:{Style.RESET_ALL}")
-            print("1. Mostrar carta")
-            print("2. Tomar pedido")
-            print("3. Mostrar pedidos")
-            print("4. Modificar pedido")
-            print("5. Eliminar pedido")
-            print("6. Enviar Pedido")
+    exit(1)
 
-            opcion = input(f"{Fore.GREEN}Ingrese opción:{Style.RESET_ALL} ").strip()
-            if opcion not in ["1", "2", "3", "4", "5", "6"]:
-                print(f"{Fore.RED}Opción no válida....{Style.RESET_ALL}")
+# Función para solicitar IDs de manera segura (valida que sea entero)
+def solicitar_id(mensaje): 
+    while True:
+        entrada = input(f"{Fore.YELLOW}{mensaje}:{Style.RESET_ALL} ").strip()
+        if entrada.isdigit():
+            return int(entrada)
+        else:
+            print(f"{Fore.RED}Entrada inválida. Ingrese un número entero.{Style.RESET_ALL}")
+
+def solicitar_nombre(mensaje):
+    """
+    Solicita el nombre y no permite que incluya dígitos.
+    """
+    while True:
+        nombre = input(f"{Fore.YELLOW}{mensaje}:{Style.RESET_ALL} ").strip()
+        if any(ch.isdigit() for ch in nombre):
+            print(f"{Fore.RED}El nombre no puede contener números. Intente nuevamente.{Style.RESET_ALL}")
+        else:
+            return nombre
+
+try:
+    while True:
+        print(f"\n{Fore.CYAN}Opciones:{Style.RESET_ALL}")
+        print("1. Mostrar carta")
+        print("2. Tomar pedido")
+        print("3. Mostrar pedidos")
+        print("4. Modificar pedido")
+        print("5. Eliminar pedido")
+        print("6. Enviar Pedido")
+
+        opcion = input(f"{Fore.GREEN}Ingrese opción:{Style.RESET_ALL} ").strip()
+        if opcion not in ["1", "2", "3", "4", "5", "6"]:
+            print(f"{Fore.RED}Opción no válida....{Style.RESET_ALL}")
+            continue
+
+        # Enviar la opción elegida
+        try:
+            s.sendall(opcion.encode())
+        except (ConnectionResetError, BrokenPipeError):
+            print(f"{Fore.RED}Error: No se puede enviar datos, la conexión se ha cerrado inesperadamente.{Style.RESET_ALL}")
+            break
+        except OSError as e:
+            print(f"{Fore.RED}Error de envío de datos: {e}{Style.RESET_ALL}")
+            break
+
+        # Recibir la respuesta inicial del servidor para esa opción
+        try:
+            respuesta = s.recv(4096).decode()
+            if not respuesta:  # Si viene vacío, se cerró la conexión
+                print(f"{Fore.RED}El servidor cerró la conexión.{Style.RESET_ALL}")
+                break
+            print(respuesta)
+        except (ConnectionResetError, BrokenPipeError):
+            print(f"{Fore.RED}Error: El servidor cerró la conexión al recibir datos.{Style.RESET_ALL}")
+            break
+        except OSError as e:
+            print(f"{Fore.RED}Error de recepción de datos: {e}{Style.RESET_ALL}")
+            break
+
+        # Manejo de cada opción
+        if opcion == "2":
+            # Tomar pedido
+            try:
+                nombre = solicitar_nombre("Ingrese su nombre")
+                s.sendall(nombre.encode())
+
+                producto = solicitar_id("Ingrese el producto para agregar al pedido (ID)")
+                s.sendall(str(producto).encode())
+
+                cantidad = solicitar_id("Ingrese la cantidad")
+                s.sendall(str(cantidad).encode())
+
+                observaciones = input(f"{Fore.YELLOW}Ingrese las observaciones:{Style.RESET_ALL} ").strip()
+                s.sendall(observaciones.encode())
+
+                # Respuesta del servidor tras tomar el pedido
+                respuesta = s.recv(4096).decode()
+                print(respuesta)
+            except (ConnectionResetError, BrokenPipeError):
+                print(f"{Fore.RED}Error: Conexión cerrada mientras se enviaban datos del pedido.{Style.RESET_ALL}")
+                break
+            except OSError as e:
+                print(f"{Fore.RED}Error de envío/recepción en la opción 2: {e}{Style.RESET_ALL}")
+                break
+
+        elif opcion == "3":
+            # Mostrar pedidos
+            # El mensaje "No hay pedidos." podría ya haber sido impreso
+            if respuesta == "No hay pedidos.":
+                continue
+
+            # Pregunta si quiere agregar otro producto
+            try:
+                pregunta = input(f"{Fore.YELLOW}¿Desea agregar otro producto al pedido? (s/n):{Style.RESET_ALL} ").strip().lower()
+                s.sendall(pregunta.encode())
+
+                if pregunta == 's':
+                    nombre = solicitar_nombre("Ingrese su nombre")
+                    s.sendall(nombre.encode())
+
+                    producto = solicitar_id("Ingrese el producto para agregar al pedido (ID)")
+                    s.sendall(str(producto).encode())
+
+                    cantidad = solicitar_id("Ingrese la cantidad")
+                    s.sendall(str(cantidad).encode())
+
+                    observaciones = input(f"{Fore.YELLOW}Ingrese las observaciones:{Style.RESET_ALL} ").strip()
+                    s.sendall(observaciones.encode())
+
+                    respuesta = s.recv(4096).decode()
+                    print(respuesta)
+            except (ConnectionResetError, BrokenPipeError):
+                print(f"{Fore.RED}Error: Conexión cerrada mientras se enviaban/recibían datos adicionales.{Style.RESET_ALL}")
+                break
+            except OSError as e:
+                print(f"{Fore.RED}Error de envío/recepción en la opción 3: {e}{Style.RESET_ALL}")
+                break
+
+        elif opcion == "4":
+            # Modificar pedido
+            if respuesta == "No hay pedidos.":
                 continue
 
             try:
-                s.sendall(opcion.encode())
+                id_pedido = solicitar_id("Ingrese el ID del pedido a modificar")
+                s.sendall(str(id_pedido).encode())
+
                 respuesta = s.recv(4096).decode()
                 if not respuesta:
                     print(f"{Fore.RED}El servidor cerró la conexión.{Style.RESET_ALL}")
                     break
-                print(respuesta)
-            except ConnectionResetError:
-                print(f"{Fore.RED}El servidor se ha cerrado. No se puede continuar.{Style.RESET_ALL}")
-                break
-            except BrokenPipeError:
-                print(f"{Fore.RED}Error: No se puede enviar datos, la conexión está cerrada.{Style.RESET_ALL}")
-                break
 
-            if opcion == "2":
-                nombre = input(f"{Fore.YELLOW}Ingrese su nombre:{Style.RESET_ALL} ").strip()
-                s.sendall(nombre.encode())
-                producto = solicitar_id("Ingrese el producto para agregar al pedido (ID)")
-                s.sendall(str(producto).encode())
-                cantidad = solicitar_id("Ingrese la cantidad")
-                s.sendall(str(cantidad).encode())
-                observaciones = input(f"{Fore.YELLOW}Ingrese las observaciones:{Style.RESET_ALL} ").strip()
-                s.sendall(observaciones.encode())
-                respuesta = s.recv(4096).decode()
-                print(respuesta)
-
-            elif opcion == "3":
-                if respuesta == "No hay pedidos.":
-                    continue
-                pregunta = input(f"{Fore.YELLOW}¿Desea agregar otro producto al pedido? (s/n):{Style.RESET_ALL} ").strip().lower()
-                s.sendall(pregunta.encode())
-                if pregunta == 's':
-                    nombre = input(f"{Fore.YELLOW}Ingrese su nombre:{Style.RESET_ALL} ").strip()
-                    s.sendall(nombre.encode())
-                    producto = solicitar_id("Ingrese el producto para agregar al pedido (ID)")
-                    s.sendall(str(producto).encode())
-                    cantidad = solicitar_id("Ingrese la cantidad")
-                    s.sendall(str(cantidad).encode())
-                    observaciones = input(f"{Fore.YELLOW}Ingrese las observaciones:{Style.RESET_ALL} ").strip()
-                    s.sendall(observaciones.encode())
-                    respuesta = s.recv(4096).decode()
-                    print(respuesta)
-
-            elif opcion == "4":
-                if respuesta == "No hay pedidos.":
-                    continue
-                id_pedido = solicitar_id("Ingrese el ID del pedido a modificar")
-                s.sendall(str(id_pedido).encode())
-                respuesta = s.recv(4096).decode()
                 if respuesta == "El pedido con el ID proporcionado no existe.":
                     print(respuesta)
                 else:
                     producto = solicitar_id("Ingrese el nuevo producto (ID)")
                     s.sendall(str(producto).encode())
+
                     cantidad = solicitar_id("Ingrese la nueva cantidad")
                     s.sendall(str(cantidad).encode())
+
                     observaciones = input(f"{Fore.YELLOW}Ingrese las nuevas observaciones:{Style.RESET_ALL} ").strip()
                     s.sendall(observaciones.encode())
+
                     respuesta = s.recv(4096).decode()
                     print(respuesta)
+            except (ConnectionResetError, BrokenPipeError):
+                print(f"{Fore.RED}Error: Conexión cerrada mientras se modificaba el pedido.{Style.RESET_ALL}")
+                break
+            except OSError as e:
+                print(f"{Fore.RED}Error de envío/recepción en la opción 4: {e}{Style.RESET_ALL}")
+                break
 
-            elif opcion == "5":
-                if respuesta == "No hay pedidos.":
-                    continue
+        elif opcion == "5":
+            # Eliminar pedido
+            if respuesta == "No hay pedidos.":
+                continue
+
+            try:
                 id_pedido = solicitar_id("Ingrese el ID del pedido a eliminar")
                 s.sendall(str(id_pedido).encode())
                 respuesta = s.recv(4096).decode()
+                if not respuesta:
+                    print(f"{Fore.RED}El servidor cerró la conexión.{Style.RESET_ALL}")
+                    break
                 print(respuesta)
+            except (ConnectionResetError, BrokenPipeError):
+                print(f"{Fore.RED}Error: Conexión cerrada mientras se eliminaba el pedido.{Style.RESET_ALL}")
+                break
+            except OSError as e:
+                print(f"{Fore.RED}Error de envío/recepción en la opción 5: {e}{Style.RESET_ALL}")
+                break
 
-            elif opcion == "6":
-                if respuesta == "No hay pedidos.":
-                    continue
+        elif opcion == "6":
+            # Enviar Pedido
+            if respuesta == "No hay pedidos.":
+                continue
+
+            try:
                 pregunta = input(f"{Fore.YELLOW}¿Desea enviar el pedido? (s/n):{Style.RESET_ALL} ").strip().lower()
                 s.sendall(pregunta.encode())
+
                 if pregunta == 's':
+                    # Recibimos 2 veces la respuesta, según la lógica original
                     respuesta = s.recv(4096).decode()
+                    if not respuesta:
+                        print(f"{Fore.RED}El servidor cerró la conexión.{Style.RESET_ALL}")
+                        break
                     print(respuesta)
+
                     respuesta = s.recv(4096).decode()
+                    if not respuesta:
+                        print(f"{Fore.RED}El servidor cerró la conexión.{Style.RESET_ALL}")
+                        break
                     print(respuesta)
+
+                    # Después de enviar el pedido, se cierra el flujo
                     break
-                
-    except KeyboardInterrupt:
-        print(f"\n{Fore.RED}Cliente cerrado por el usuario.{Style.RESET_ALL}")
-    finally:
+            except (ConnectionResetError, BrokenPipeError):
+                print(f"{Fore.RED}Error: Conexión cerrada mientras se enviaba el pedido.{Style.RESET_ALL}")
+                break
+            except OSError as e:
+                print(f"{Fore.RED}Error de envío/recepción en la opción 6: {e}{Style.RESET_ALL}")
+                break
+
+except KeyboardInterrupt:
+    print(f"\n{Fore.RED}Cliente cerrado por el usuario.{Style.RESET_ALL}")
+finally:
+    if s:
         s.close()
-        print(f"{Fore.RED}Conexión cerrada.{Style.RESET_ALL}")
+    print(f"{Fore.RED}Conexión cerrada.{Style.RESET_ALL}")
