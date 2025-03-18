@@ -20,7 +20,6 @@ def main():
     except KeyboardInterrupt:
         print("\nServidor cerrado.")
     finally:
-        # Asegurar que los procesos hijos terminan correctamente
         notificador_process.terminate()
         notificador_process.join()
 

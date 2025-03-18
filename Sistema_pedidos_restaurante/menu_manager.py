@@ -4,7 +4,7 @@ from producto import Producto
 class Menu:
     def __init__(self, carta_json):
         self.carta_json = carta_json
-        self.productos = []   #voy a tener una lista de objetos producto
+        self.productos = [] 
         self.load()
 
     def load(self):

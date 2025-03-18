@@ -97,8 +97,6 @@ try:
         if opcion not in ["1", "2", "3", "4", "5", "6"]:
             print(f"{Fore.RED}Opción no válida....{Style.RESET_ALL}")
             continue
-
-        # Enviar la opción elegida
         try:
             s.sendall(opcion.encode())
         except (ConnectionResetError, BrokenPipeError):
@@ -107,11 +105,9 @@ try:
         except OSError as e:
             print(f"{Fore.RED}Error de envío de datos: {e}{Style.RESET_ALL}")
             break
-
-        # Recibir la respuesta inicial del servidor para esa opción
         try:
             respuesta = s.recv(4096).decode()
-            if not respuesta:  # Si viene vacío, se cerró la conexión
+            if not respuesta: 
                 print(f"{Fore.RED}El servidor cerró la conexión.{Style.RESET_ALL}")
                 break
             print(respuesta)
@@ -121,10 +117,7 @@ try:
         except OSError as e:
             print(f"{Fore.RED}Error de recepción de datos: {e}{Style.RESET_ALL}")
             break
-
-        # Manejo de cada opción
         if opcion == "2":
-            # Tomar pedido
             try:
                 nombre = solicitar_nombre("Ingrese su nombre")
                 s.sendall(nombre.encode())
@@ -138,7 +131,6 @@ try:
                 observaciones = input(f"{Fore.YELLOW}Ingrese las observaciones:{Style.RESET_ALL} ").strip()
                 s.sendall(observaciones.encode())
 
-                # Respuesta del servidor tras tomar el pedido
                 respuesta = s.recv(4096).decode()
                 print(respuesta)
             except (ConnectionResetError, BrokenPipeError):
@@ -149,12 +141,9 @@ try:
                 break
 
         elif opcion == "3":
-            # Mostrar pedidos
-            # El mensaje "No hay pedidos." podría ya haber sido impreso
+
             if respuesta == "No hay pedidos.":
                 continue
-
-            # Pregunta si quiere agregar otro producto
             try:
                 pregunta = input(f"{Fore.YELLOW}¿Desea agregar otro producto al pedido? (s/n):{Style.RESET_ALL} ").strip().lower()
                 s.sendall(pregunta.encode())
@@ -182,10 +171,8 @@ try:
                 break
 
         elif opcion == "4":
-            # Modificar pedido
             if respuesta == "No hay pedidos.":
                 continue
-
             try:
                 id_pedido = solicitar_id("Ingrese el ID del pedido a modificar")
                 s.sendall(str(id_pedido).encode())
@@ -217,7 +204,6 @@ try:
                 break
 
         elif opcion == "5":
-            # Eliminar pedido
             if respuesta == "No hay pedidos.":
                 continue
 
@@ -237,7 +223,6 @@ try:
                 break
 
         elif opcion == "6":
-            # Enviar Pedido
             if respuesta == "No hay pedidos.":
                 continue
 
@@ -246,7 +231,6 @@ try:
                 s.sendall(pregunta.encode())
 
                 if pregunta == 's':
-                    # Recibimos 2 veces la respuesta, según la lógica original
                     respuesta = s.recv(4096).decode()
                     if not respuesta:
                         print(f"{Fore.RED}El servidor cerró la conexión.{Style.RESET_ALL}")
@@ -259,7 +243,6 @@ try:
                         break
                     print(respuesta)
 
-                    # Después de enviar el pedido, se cierra el flujo
                     break
             except (ConnectionResetError, BrokenPipeError):
                 print(f"{Fore.RED}Error: Conexión cerrada mientras se enviaba el pedido.{Style.RESET_ALL}")

@@ -39,16 +39,14 @@ def marcar_pedido_finalizado(parent_conn):
     if idx < 0 or idx >= len(pedidos_en_cocina):
         print("Índice fuera de rango.")
         return
-    pedido_finalizado = pedidos_en_cocina.pop(idx) # guardo el pedido q elimino
+    pedido_finalizado = pedidos_en_cocina.pop(idx)
     
-    # Extraer la dirección del cliente para notificarlo
     partes = pedido_finalizado.rsplit(",", 1)
     direccion_cliente = partes[-1].strip()
     print(f"Pedido '{idx_str}' marcado como finalizado.")
-
-    # Notificar al cliente, si está conectado
-    if direccion_cliente in clientes_sockets:
-        cliente_socket, _ = clientes_sockets[direccion_cliente]      #guardo solo la direccion del cliente(por eso el _ para omitir lo otro)
+    
+    if direccion_cliente in clientes_sockets: # Notificar al cliente si está conectado
+        cliente_socket, _ = clientes_sockets[direccion_cliente] #guardo solo la direccion del cliente(por eso el _ para omitir lo otro)
         try:
             cliente_socket.sendall("Pedido listo para retirar".encode())
             print(f"Notificación enviada al cliente {direccion_cliente}")
@@ -57,7 +55,7 @@ def marcar_pedido_finalizado(parent_conn):
     else:
         print(f"No se encontró cliente para {direccion_cliente} (posiblemente se desconectó).")
     
-    parent_conn.send(f"Pedido finalizado -> {pedido_finalizado}") # envio el pedido al proceso notificador ---
+    parent_conn.send(f"Pedido finalizado -> {pedido_finalizado}") # envio el pedido al proceso notificador
 
 def manage_pedidos_local(parent_conn): #menu para la cocina
     while True:
@@ -76,5 +74,5 @@ def manage_pedidos_local(parent_conn): #menu para la cocina
 def iniciar_cocina(parent_conn):
     hilo_cocina = threading.Thread(target=cocina_interna, daemon=True)
     hilo_cocina.start()
-    manage_pedidos_local(parent_conn)# El menú se ejecuta en el hilo principal
+    manage_pedidos_local(parent_conn)
 
